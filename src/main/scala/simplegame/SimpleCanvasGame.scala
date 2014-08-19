@@ -1,6 +1,7 @@
 package simplegame
 
 import scala.scalajs.js
+import scala.scalajs.js.JSApp
 import js.Dynamic.{ global => g }
 import org.scalajs.dom.extensions._
 import org.scalajs.dom
@@ -17,7 +18,7 @@ case class Hero(
 
 case class Monster(pos: Position)
 
-object SimpleCanvasGame {
+object SimpleCanvasGame extends JSApp{
   def main(): Unit = {
     initGame
   }
@@ -31,12 +32,13 @@ object SimpleCanvasGame {
   }
 
   def initGame {
+    val i=1
     // Create the canvas
     val canvas = dom.document.createElement("canvas").cast[dom.HTMLCanvasElement]
     val ctx = canvas.getContext("2d").cast[dom.CanvasRenderingContext2D]
 
-    canvas.width = 0.95 * g.window.innerWidth
-    canvas.height = 0.95 * g.window.innerHeight
+    canvas.width = (0.95 * g.window.innerWidth).intValue
+    canvas.height = (0.95 * g.window.innerHeight).intValue
     g.document.body.appendChild(canvas)
 
     // Background image
@@ -70,7 +72,7 @@ object SimpleCanvasGame {
 
     // Handle keyboard controls
     import scala.collection.mutable.HashMap
-    val keysDown = HashMap[js.Number, Boolean]()
+    val keysDown = HashMap[Int, Boolean]()
 
     g.addEventListener("keydown", (e: dom.KeyboardEvent) => {
       keysDown += e.keyCode -> true
@@ -153,6 +155,6 @@ object SimpleCanvasGame {
     // Let's play this game!
     reset()
 
-    g.setInterval(gameLoop, 1) // Execute as fast as possible
+    g.setInterval(gameLoop, 50) // Execute as fast as possible
   }
 }
