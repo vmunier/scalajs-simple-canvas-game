@@ -1,22 +1,19 @@
 package simplegame
-package test
 
-import scala.scalajs.js
-import js.Dynamic.{ global => g }
-import scala.scalajs.test.JasmineTest
-import org.scalajs.dom.extensions._
 import org.scalajs.dom
+import org.scalajs.dom.html.Canvas
+import utest._
 
-object SimpleCanvasGameTest extends JasmineTest {
+object SimpleCanvasGameTest extends TestSuite {
 
-  describe("SimpleCanvasGame") {
-    it("should implement isValidPosition()") {
+  val tests = TestSuite {
+    "isValidPosition" - {
       import SimpleCanvasGame._
-      val canvas = dom.document.createElement("canvas").cast[dom.HTMLCanvasElement]
+      val canvas = dom.document.createElement("canvas").asInstanceOf[Canvas]
 
-      expect(isValidPosition(Position(-1, 0), canvas)).toBe(false)
-      expect(isValidPosition(Position(4, -15), canvas)).toBe(false)
-      expect(isValidPosition(Position(0, 0), canvas)).toBe(true)
+      assert(! isValidPosition(Position(-1, 0), canvas))
+      assert(! isValidPosition(Position(4, -15), canvas))
+      assert(isValidPosition(Position(0, 0), canvas))
     }
   }
 }

@@ -7,9 +7,11 @@
   <body>
     <a href="http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/">Simple HTML5 Canvas game</a> ported to <a href="http://www.scala-js.org/">ScalaJS</a>. The source code of this game is available on <a href="https://github.com/vmunier/scalajs-simple-canvas-game">GitHub</a>.
 
-    <script type="text/javascript" src="./target/scala-2.10/simplegame-extdeps.js"></script>
-    <script type="text/javascript" src="./target/scala-2.10/simplegame-intdeps.js"></script>
-    <script type="text/javascript" src="./target/scala-2.10/simplegame.js"></script>
-
+    <!-- Include JavaScript dependencies -->
+    <script type="text/javascript" src="./target/scala-2.11/simplegame-jsdeps.js"></script>
+    <!-- Include Scala.js compiled code -->
+    <script type="text/javascript" src="./target/scala-2.11/simplegame-fastopt.js"></script>
+    <!-- Run JSApp -->
+    <script type="text/javascript" src="./target/scala-2.11/simplegame-launcher.js"></script>
   </body>
 </html>
