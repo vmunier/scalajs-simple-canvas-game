@@ -3,28 +3,27 @@ package simplegame
 
 import org.scalajs.dom
 import org.scalajs.dom.ext.KeyCode
-
-import scala.scalajs.js
 import org.scalajs.dom.html.Canvas
 import org.scalajs.dom.raw.HTMLImageElement
+
+import scala.scalajs.js
 
 case class Position(x: Int, y: Int)
 
 case class Monster(pos: Position)
 
 case class Hero(
-  pos: Position,
-  speed: Int = 256 // movement in pixels per second
-)
+                 pos: Position,
+                 speed: Int = 256 // movement in pixels per second
+               )
 
 object Hero {
   val size = 32
 }
 
 class Image(src: String) {
-  private var ready: Boolean = false
-
   val element = dom.document.createElement("img").asInstanceOf[HTMLImageElement]
+  private var ready: Boolean = false
   element.onload = (e: dom.Event) => ready = true
   element.src = src
 
@@ -35,14 +34,6 @@ object SimpleCanvasGame extends js.JSApp {
 
   def main(): Unit = {
     initGame
-  }
-
-  def isValidPosition(pos: Position, canvas: Canvas): Boolean = {
-    0 <= pos.x && (pos.x + Hero.size) <= canvas.width && 0 <= pos.y && (pos.y + Hero.size) <= canvas.height
-  }
-
-  def areTouching(posA: Position, posB: Position): Boolean = {
-    posA.x <= (posB.x + Hero.size) && posB.x <= (posA.x + Hero.size) && posA.y <= (posB.y + Hero.size) && posB.y <= (posA.y + Hero.size)
   }
 
   def initGame(): Unit = {
@@ -89,10 +80,10 @@ object SimpleCanvasGame extends js.JSApp {
     def update(modifier: Double) {
       val modif = (hero.speed * modifier).toInt
       var Position(x, y) = hero.pos
-      if (keysDown.contains(KeyCode.Left))  x -= modif
+      if (keysDown.contains(KeyCode.Left)) x -= modif
       if (keysDown.contains(KeyCode.Right)) x += modif
-      if (keysDown.contains(KeyCode.Up))    y -= modif
-      if (keysDown.contains(KeyCode.Down))  y += modif
+      if (keysDown.contains(KeyCode.Up)) y -= modif
+      if (keysDown.contains(KeyCode.Down)) y += modif
 
       val newPos = Position(x, y)
       if (isValidPosition(newPos, canvas)) {
@@ -142,5 +133,13 @@ object SimpleCanvasGame extends js.JSApp {
     reset()
 
     dom.window.setInterval(gameLoop, 1) // Execute as fast as possible
+  }
+
+  def isValidPosition(pos: Position, canvas: Canvas): Boolean = {
+    0 <= pos.x && (pos.x + Hero.size) <= canvas.width && 0 <= pos.y && (pos.y + Hero.size) <= canvas.height
+  }
+
+  def areTouching(posA: Position, posB: Position): Boolean = {
+    posA.x <= (posB.x + Hero.size) && posB.x <= (posA.x + Hero.size) && posA.y <= (posB.y + Hero.size) && posB.y <= (posA.y + Hero.size)
   }
 }
