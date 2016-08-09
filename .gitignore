@@ -1,28 +1,25 @@
-logs
+# sbt
+lib_managed
 project/project
-project/target
 target
-tmp
-.history
-dist
-.idea
-*.iml
-/out
-.idea_modules
+
+# Worksheets (Eclipse or IntelliJ)
+*.sc
+
+# Eclipse
+.cache
 .classpath
 .project
-/RUNNING_PID
+.scala_dependencies
 .settings
+.target
+.worksheet
+
+# IntelliJ
+.idea
+
+# Mac
 .DS_Store
 
-# temp files
-.~*
-*~
-*.orig
-
-# eclipse
-.scala_dependencies
-.buildpath
-.cache
-.target
-bin/
+# Log files
+*.log

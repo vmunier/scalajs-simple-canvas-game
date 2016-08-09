@@ -1,3 +1,4 @@
+package nl.amsterdam
 package simplegame
 
 import org.scalajs.dom
@@ -53,9 +54,9 @@ object SimpleCanvasGame extends js.JSApp {
     canvas.height = (0.95 * dom.window.innerHeight).toInt
     dom.document.body.appendChild(canvas)
 
-    val bgImage = new Image("images/background.png")
-    val heroImage = new Image("images/hero.png")
-    val monsterImage = new Image("images/monster.png")
+    val bgImage = new Image("img/background.png")
+    val heroImage = new Image("img/hero.png")
+    val monsterImage = new Image("img/monster.png")
 
     var hero = Hero(Position(0, 0))
     var monster = Monster(Position(0, 0))
