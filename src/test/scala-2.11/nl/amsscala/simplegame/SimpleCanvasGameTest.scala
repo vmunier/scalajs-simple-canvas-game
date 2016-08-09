@@ -11,9 +11,9 @@ object SimpleCanvasGameTest extends TestSuite {
     "isValidPosition" - {
       val canvas = dom.document.createElement("canvas").asInstanceOf[Canvas]
 
-      assert(!(new Hero(Position(-1, 0)).isValidPosition(canvas)))
-      assert(!(new Hero(Position(4, -15)).isValidPosition(canvas)))
-      assert((new Hero(Position(0, 0)).isValidPosition(canvas)))
+      assert(!new Hero(-1, 0).isValidPosition(canvas))
+      assert(!new Hero(4, -15).isValidPosition(canvas))
+      assert(new Hero(0, 0).isValidPosition(canvas))
     }
   }
 }

@@ -1,41 +1,40 @@
-/*
- * SimpleCanvasGame.scala 2016-08-09 Simple Game
- * ©2016 by F.W. van den Berg
- * Licensed under the EUPL V.1.1
- *
- *  This Software is provided to You under the terms of the European Union Public License (the "EUPL") version 1.1
- *  as published by the European Union. Any use of this Software, other than as authorized under this License is
- *  strictly prohibited (to the extent such use is covered by a right of the copyright holder of this Software).
- *
- *  This Software is provided under the License on an "AS IS" basis and without warranties of any kind concerning
- *  the Software, including without limitation merchantability, fitness for a particular purpose, absence of defects
- *  or errors, accuracy, and non-infringement of intellectual property rights other than copyright. This disclaimer
- *  of warranty is an essential part of the License and a condition for the grant of any rights to this Software.
- */
-
 package nl.amsscala.simplegame
 
 import org.scalajs.dom
-import org.scalajs.dom.ext.KeyCode
-import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.HTMLImageElement
 
+import scala.Numeric.Implicits.infixNumericOps
 import scala.collection.mutable
 import scala.scalajs.js
 
-case class Position(x: Int, y: Int)
+case class Position[P: Numeric](x: P, y: P) {
 
-class Monster(val pos: Position)
+  import Ordering.Implicits.infixOrderingOps
 
-class Hero(val pos: Position) {
-  def isValidPosition(canvas: Canvas): Boolean = {
-    0 <= pos.x &&
-      (pos.x + Hero.size) <= canvas.width &&
-      0 <= pos.y &&
-      (pos.y + Hero.size) <= canvas.height
+  def +(p: Position[P]) = Position(x + p.x, y + p.y)
+
+  def isInTheCanvas(canvas: dom.html.Canvas, size: P): Boolean = {
+    0.asInstanceOf[P] <= x &&
+      (x + size) <= canvas.width.asInstanceOf[P] &&
+      0.asInstanceOf[P] <= y &&
+      (y + size) <= canvas.height.asInstanceOf[P]
   }
 
+  def areTouching(posB: Position[P], size: P): Boolean = {
+    x <= (posB.x + size) &&
+      posB.x <= (x + size) &&
+      y <= (posB.y + size) &&
+      posB.y <= (y + size)
+  }
+}
 
+class Monster[T: Numeric](val pos: Position[T]) {
+  def this(x: T, y: T) = this(Position(x, y))
+}
+
+class Hero[A: Numeric](val pos: Position[A]) {
+  def this(x: A, y: A) = this(Position(x, y))
+
+  def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
 }
 
 object Hero {
@@ -44,42 +43,32 @@ object Hero {
 }
 
 class Image(src: String, var isReady: Boolean = false) {
-  val element = dom.document.createElement("img").asInstanceOf[HTMLImageElement]
+  val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
 
   element.onload = (e: dom.Event) => isReady = true
   element.src = src
 }
 
+object Image {
+  def apply(src: String) = new Image(src)
+}
+
 object SimpleCanvasGame extends js.JSApp {
+
+  // Keyboard events store
+  val keysDown = mutable.Set.empty[Int]
 
   def main(): Unit = {
     // Create the canvas
-    val canvas = dom.document.createElement("canvas").asInstanceOf[Canvas]
-    val ctx = canvas.getContext("2d") //.asInstanceOf[dom.CanvasRenderingContext2D]
+    val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
+    val ctx = canvas.getContext("2d")
 
     canvas.width = (0.95 * dom.window.innerWidth).toInt
     canvas.height = (0.95 * dom.window.innerHeight).toInt
     dom.document.body.appendChild(canvas)
 
-    val bgImage = new Image("img/background.png")
-    val heroImage = new Image("img/hero.png")
-    val monsterImage = new Image("img/monster.png")
-
-    var hero = new Hero(Position(0, 0))
-    var monster = new Monster(Position(0, 0))
-
-    var monstersCaught = 0
-
-    // Handle keyboard controls
-    val keysDown = mutable.HashMap[Int, Boolean]()
-
-    dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) => {
-      keysDown += e.keyCode -> true
-    }, useCapture = false)
-
-    dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
-      keysDown -= e.keyCode
-    }, useCapture = false)
+    val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
+    var (monstersCaught, hero, monster) = (0, new Hero(0, 0), new Monster(0, 0))
 
     // Reset the game when the player catches a monster
     def reset() = {
@@ -95,16 +84,16 @@ object SimpleCanvasGame extends js.JSApp {
     def update(modifier: Double) {
       val modif = (Hero.speed * modifier).toInt
       var Position(x, y) = hero.pos
-      if (keysDown.contains(KeyCode.Left)) x -= modif
-      if (keysDown.contains(KeyCode.Right)) x += modif
-      if (keysDown.contains(KeyCode.Up)) y -= modif
-      if (keysDown.contains(KeyCode.Down)) y += modif
+      if (keysDown.contains(dom.ext.KeyCode.Left)) x -= modif
+      if (keysDown.contains(dom.ext.KeyCode.Right)) x += modif
+      if (keysDown.contains(dom.ext.KeyCode.Up)) y -= modif
+      if (keysDown.contains(dom.ext.KeyCode.Down)) y += modif
 
       val newPos = new Hero(Position(x, y))
       if (newPos.isValidPosition(canvas)) hero = newPos
 
       // Are they touching?
-      if (areTouching(hero.pos, monster.pos)) {
+      if (hero.pos.areTouching(monster.pos, Hero.size)) {
         monstersCaught += 1
         reset()
       }
@@ -144,7 +133,12 @@ object SimpleCanvasGame extends js.JSApp {
     dom.window.setInterval(gameLoop, 1) // Execute as fast as possible
   }
 
-  def areTouching(posA: Position, posB: Position): Boolean = {
-    posA.x <= (posB.x + Hero.size) && posB.x <= (posA.x + Hero.size) && posA.y <= (posB.y + Hero.size) && posB.y <= (posA.y + Hero.size)
-  }
+  dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) => {
+    keysDown += e.keyCode
+  }, useCapture = false)
+
+  dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
+    keysDown -= e.keyCode
+  }, useCapture = false)
+
 }
