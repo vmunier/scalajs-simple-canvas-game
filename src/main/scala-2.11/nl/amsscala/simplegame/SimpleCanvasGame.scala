@@ -1,5 +1,19 @@
-package nl.amsterdam
-package simplegame
+/*
+ * SimpleCanvasGame.scala 2016-08-09 Simple Game
+ * ©2016 by F.W. van den Berg
+ * Licensed under the EUPL V.1.1
+ *
+ *  This Software is provided to You under the terms of the European Union Public License (the "EUPL") version 1.1
+ *  as published by the European Union. Any use of this Software, other than as authorized under this License is
+ *  strictly prohibited (to the extent such use is covered by a right of the copyright holder of this Software).
+ *
+ *  This Software is provided under the License on an "AS IS" basis and without warranties of any kind concerning
+ *  the Software, including without limitation merchantability, fitness for a particular purpose, absence of defects
+ *  or errors, accuracy, and non-infringement of intellectual property rights other than copyright. This disclaimer
+ *  of warranty is an essential part of the License and a condition for the grant of any rights to this Software.
+ */
+
+package nl.amsscala.simplegame
 
 import org.scalajs.dom
 import org.scalajs.dom.ext.KeyCode
@@ -13,20 +27,27 @@ case class Position(x: Int, y: Int)
 
 class Monster(val pos: Position)
 
-class Hero(val pos: Position)
+class Hero(val pos: Position) {
+  def isValidPosition(canvas: Canvas): Boolean = {
+    0 <= pos.x &&
+      (pos.x + Hero.size) <= canvas.width &&
+      0 <= pos.y &&
+      (pos.y + Hero.size) <= canvas.height
+  }
+
+
+}
 
 object Hero {
   val size = 32
-  val speed =256
+  val speed = 256
 }
 
-class Image(src: String) {
+class Image(src: String, var isReady: Boolean = false) {
   val element = dom.document.createElement("img").asInstanceOf[HTMLImageElement]
-  private var ready: Boolean = false
-  element.onload = (e: dom.Event) => ready = true
-  element.src = src
 
-  def isReady: Boolean = ready
+  element.onload = (e: dom.Event) => isReady = true
+  element.src = src
 }
 
 object SimpleCanvasGame extends js.JSApp {
@@ -79,8 +100,8 @@ object SimpleCanvasGame extends js.JSApp {
       if (keysDown.contains(KeyCode.Up)) y -= modif
       if (keysDown.contains(KeyCode.Down)) y += modif
 
-      val newPos = Position(x, y)
-      if (isValidPosition(newPos, canvas)) hero = new Hero(newPos)
+      val newPos = new Hero(Position(x, y))
+      if (newPos.isValidPosition(canvas)) hero = newPos
 
       // Are they touching?
       if (areTouching(hero.pos, monster.pos)) {
@@ -121,10 +142,6 @@ object SimpleCanvasGame extends js.JSApp {
     reset()
 
     dom.window.setInterval(gameLoop, 1) // Execute as fast as possible
-  }
-
-  def isValidPosition(pos: Position, canvas: Canvas): Boolean = {
-    0 <= pos.x && (pos.x + Hero.size) <= canvas.width && 0 <= pos.y && (pos.y + Hero.size) <= canvas.height
   }
 
   def areTouching(posA: Position, posB: Position): Boolean = {

@@ -1,0 +1,20 @@
+#https://docs.travis-ci.com/user/languages/scala
+language: scala
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test
+scala:
+  - 2.11.8
+
+jdk:
+  - oraclejdk8
+sudo: false
+notifications:
+  email:
+    recipients:
+    - vdenberg+Travis@gmail.com
+
+branches:
+  only:
+    - master
+
+#  - sbt ++$TRAVIS_SCALA_VERSION 'set scalaJSStage in Global := FastOptStage' test 'set scalaJSStage in Global := FullOptStage' test
