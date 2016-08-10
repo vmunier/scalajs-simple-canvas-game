@@ -7,10 +7,9 @@ import scala.collection.mutable
 import scala.scalajs.js
 
 object SimpleCanvasGame extends js.JSApp with Page with Game {
-  val directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
   // Keyboard events store
-  val keysDown = mutable.Map.empty[Int, Double]
+  val keysDown = mutable.Map.empty[Int, (Double, GameState)]
 
   def main(): Unit = {
     // Create the canvas
@@ -22,75 +21,62 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
     dom.document.body.appendChild(canvas)
 
     val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
-    var (monstersCaught, hero, monster) = (0, new Hero(0, 0), new Monster(0, 0))
-
-    // Reset the game when the player catches a monster
-    def reset() = {
-      hero = new Hero(Position(canvas.width / 2, canvas.height / 2))
-
-      // Throw the monster somewhere on the screen randomly
-      monster = new Monster(Position(
-        Hero.size + (Math.random() * (canvas.width - 64)).toInt,
-        Hero.size + (Math.random() * (canvas.height - 64)).toInt))
-    }
+    var gameState = new GameState(canvas, -1)
 
     // Update game objects
-    def update(modifier: Double) {
-      val modif = (Hero.speed * modifier).toInt
-      var Position(x, y) = hero.pos
+    def update(modifier: Double): GameState = {
+      def modif = (Hero.speed * modifier).toInt
+      def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
-      val newHero = new Hero(keysDown.map(k => directions(k._1)).fold(hero.pos) { (z, i) => z + i * modif })
-      if (newHero.isValidPosition(canvas)) {
+      val newHero = new Hero(keysDown.map(k => directions(k._1)). // Convert pressed keyboard keys to coordinates
+        fold(gameState.hero.pos) { (z, i) => z + i * modif }) // Compute new position by adding and multiplying.
+      if (newHero.isValidPosition(canvas))
+      // Are they touching?
+        if (newHero.pos.areTouching(gameState.monster.pos, Hero.size)) // Reset the game when the player catches a monster
+          gameState = new GameState(canvas, gameState.monstersCaught)
+        else gameState.hero = newHero
 
-        // Are they touching?
-        if (hero.pos.areTouching(monster.pos, Hero.size)) {
-          monstersCaught += 1
-          reset()
-        } else hero = newHero
-      }
+      gameState
     }
 
     // Draw everything
-    def render() {
+    def render(gs: GameState) {
       if (bgImage.isReady) ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)
-      if (heroImage.isReady) ctx.drawImage(heroImage.element, hero.pos.x, hero.pos.y)
-      if (monsterImage.isReady) ctx.drawImage(monsterImage.element, monster.pos.x, monster.pos.y)
+      if (heroImage.isReady) ctx.drawImage(heroImage.element, gs.hero.pos.x, gs.hero.pos.y)
+      if (monsterImage.isReady) ctx.drawImage(monsterImage.element, gs.monster.pos.x, gs.monster.pos.y)
 
       // Score
       ctx.fillStyle = "rgb(250, 250, 250)"
       ctx.font = "24px Helvetica"
       ctx.textAlign = "left"
       ctx.textBaseline = "top"
-      ctx.fillText("Goblins caught: " + monstersCaught, 32, 32)
+      ctx.fillText("Goblins caught: " + gs.monstersCaught, 32, 32)
     }
 
-    // TODO Make this reactive
     var prev = js.Date.now()
+    var oldUpdated : Option[GameState] = None
     // The main game loop
     val gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-
-      update(delta / 1000)
-      render()
+      val updated = update(delta / 1000)
+      render(gameState)
 
       prev = now
     }
 
     // Let's play this game!
-    reset()
-
     dom.window.setInterval(gameLoop, 20)
-  }
 
-  dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
-    e.keyCode match {
-      case Left | Right | Up | Down => keysDown += e.keyCode -> js.Date.now()
-      case _ =>
+    dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
+      e.keyCode match {
+        case Left | Right | Up | Down => keysDown += e.keyCode -> (js.Date.now(), gameState)
+        case _ =>
+      }, useCapture = false)
+
+    dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
+      keysDown -= e.keyCode
     }, useCapture = false)
-
-  dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
-    keysDown -= e.keyCode
-  }, useCapture = false)
+  }
 
 }

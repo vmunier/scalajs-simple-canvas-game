@@ -14,10 +14,21 @@ trait Game {
     def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
   }
 
+  case class GameState(var hero: Hero[Int],
+                       var monster: Monster[Int],
+                       monstersCaught: Int = 0) {
+    def this(canvas: dom.html.Canvas, oldScore: Int) =
+      this(new Hero(Position(canvas.width / 2, canvas.height / 2)),
+        // Throw the monster somewhere on the screen randomly
+        new Monster(Position(
+          Hero.size + (math.random * (canvas.width - 64)).toInt,
+          Hero.size + (math.random * (canvas.height - 64)).toInt)),
+        oldScore + 1)
+  }
+
   object Hero {
     val size = 32
     val speed = 256
   }
-
 
 }

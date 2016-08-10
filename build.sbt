@@ -13,7 +13,7 @@ homepage := Some(url("http://github.com/amsterdam-scala/Sjs-Full-Window-HTML5-Ca
 // KEEP THIS normalizedName CONSTANTLY THE SAME, otherwise the outputted JS filename will be changed.
 normalizedName := "main"
 
-scalaVersion := "2.11.8"
+scalaVersion in ThisBuild := "2.11.8"
 
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.1",
@@ -26,7 +26,7 @@ testFrameworks += new TestFramework("utest.runner.Framework")
 // lazy val root = (project in file(".")).
 enablePlugins(ScalaJSPlugin)
 
-// If true, a launcher script src="../[normalizedName]-launcher.js will
-// be generated that always calls the main def indicated by the JSApp.
+// If true, a launcher script src="../[normalizedName]-launcher.js will be generated
+// that always calls the main def indicated by the used JSApp trait.
 persistLauncher := true
 persistLauncher in Test := false
