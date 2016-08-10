@@ -1,12 +1,13 @@
 package nl.amsscala.simplegame
 
 import org.scalajs.dom
-import org.scalajs.dom.ext.KeyCode.{Down, Left, Right, Up}
+import org.scalajs.dom.ext.KeyCode._
 
 import scala.collection.mutable
 import scala.scalajs.js
 
-object SimpleCanvasGame extends js.JSApp with Page with Game{
+object SimpleCanvasGame extends js.JSApp with Page with Game {
+  val directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
   // Keyboard events store
   val keysDown = mutable.Map.empty[Int, Double]
@@ -16,8 +17,8 @@ object SimpleCanvasGame extends js.JSApp with Page with Game{
     val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
     val ctx = canvas.getContext("2d")
 
-    canvas.width = (0.95 * dom.window.innerWidth).toInt
-    canvas.height = (0.95 * dom.window.innerHeight).toInt
+    canvas.width = dom.window.innerWidth.toInt - 8
+    canvas.height = dom.window.innerHeight.toInt - 38
     dom.document.body.appendChild(canvas)
 
     val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
@@ -38,18 +39,14 @@ object SimpleCanvasGame extends js.JSApp with Page with Game{
       val modif = (Hero.speed * modifier).toInt
       var Position(x, y) = hero.pos
 
-      if (keysDown.contains(dom.ext.KeyCode.Left)) x -= modif
-      if (keysDown.contains(dom.ext.KeyCode.Right)) x += modif
-      if (keysDown.contains(dom.ext.KeyCode.Up)) y -= modif
-      if (keysDown.contains(dom.ext.KeyCode.Down)) y += modif
+      val newHero = new Hero(keysDown.map(k => directions(k._1)).fold(hero.pos) { (z, i) => z + i * modif } + hero.pos)
+      if (newHero.isValidPosition(canvas)) {
 
-      val newPos = new Hero(Position(x, y))
-      if (newPos.isValidPosition(canvas)) hero = newPos
-
-      // Are they touching?
-      if (hero.pos.areTouching(monster.pos, Hero.size)) {
-        monstersCaught += 1
-        reset()
+        // Are they touching?
+        if (hero.pos.areTouching(monster.pos, Hero.size)) {
+          monstersCaught += 1
+          reset()
+        } else hero = newHero
       }
     }
 

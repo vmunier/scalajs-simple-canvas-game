@@ -11,6 +11,8 @@ case class Position[P: Numeric](x: P, y: P) {
 
   def +(p: Position[P]) = Position(x + p.x, y + p.y)
 
+  def *(factor: P) = Position(x * factor, y * factor)
+
   def isInTheCanvas(canvas: dom.html.Canvas, size: P): Boolean = {
     0.asInstanceOf[P] <= x &&
       (x + size) <= canvas.width.asInstanceOf[P] &&
