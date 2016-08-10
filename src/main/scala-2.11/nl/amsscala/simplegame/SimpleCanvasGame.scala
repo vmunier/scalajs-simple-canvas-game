@@ -39,7 +39,7 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
       val modif = (Hero.speed * modifier).toInt
       var Position(x, y) = hero.pos
 
-      val newHero = new Hero(keysDown.map(k => directions(k._1)).fold(hero.pos) { (z, i) => z + i * modif } + hero.pos)
+      val newHero = new Hero(keysDown.map(k => directions(k._1)).fold(hero.pos) { (z, i) => z + i * modif })
       if (newHero.isValidPosition(canvas)) {
 
         // Are they touching?
