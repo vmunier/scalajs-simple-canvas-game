@@ -4,6 +4,7 @@ package simplegame
 import org.scalajs.dom
 
 trait Game {
+
   class Monster[T: Numeric](val pos: Position[T]) {
     def this(x: T, y: T) = this(Position(x, y))
   }
@@ -14,8 +15,8 @@ trait Game {
     def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
   }
 
-  case class GameState(var hero: Hero[Int],
-                       var monster: Monster[Int],
+  case class GameState(hero: Hero[Int],
+                       monster: Monster[Int],
                        monstersCaught: Int = 0) {
     def this(canvas: dom.html.Canvas, oldScore: Int) =
       this(new Hero(Position(canvas.width / 2, canvas.height / 2)),

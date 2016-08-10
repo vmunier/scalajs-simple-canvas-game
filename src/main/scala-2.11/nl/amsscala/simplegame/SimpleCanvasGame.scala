@@ -10,57 +10,43 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
 
   // Keyboard events store
   val keysDown = mutable.Map.empty[Int, (Double, GameState)]
+  // Create the canvas
+  val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
+  val ctx = canvas.getContext("2d")
+  var prev = js.Date.now()
+  var oldUpdated : Option[GameState] = None
+  val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
 
   def main(): Unit = {
-    // Create the canvas
-    val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
-    val ctx = canvas.getContext("2d")
 
     canvas.width = dom.window.innerWidth.toInt - 8
     canvas.height = dom.window.innerHeight.toInt - 38
     dom.document.body.appendChild(canvas)
 
-    val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
-    var gameState = new GameState(canvas, -1)
-
     // Update game objects
-    def update(modifier: Double): GameState = {
+    def update(gs: GameState, modifier: Double): GameState = {
       def modif = (Hero.speed * modifier).toInt
       def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
       val newHero = new Hero(keysDown.map(k => directions(k._1)). // Convert pressed keyboard keys to coordinates
-        fold(gameState.hero.pos) { (z, i) => z + i * modif }) // Compute new position by adding and multiplying.
+        fold(gs.hero.pos) { (z, i) => z + i * modif }) // Compute new position by adding and multiplying.
       if (newHero.isValidPosition(canvas))
       // Are they touching?
-        if (newHero.pos.areTouching(gameState.monster.pos, Hero.size)) // Reset the game when the player catches a monster
-          gameState = new GameState(canvas, gameState.monstersCaught)
-        else gameState.hero = newHero
-
-      gameState
+        if (newHero.pos.areTouching(gs.monster.pos, Hero.size)) // Reset the game when the player catches a monster
+          new GameState(canvas, gs.monstersCaught)
+        else gs.copy(hero = newHero)
+      else gs
     }
 
-    // Draw everything
-    def render(gs: GameState) {
-      if (bgImage.isReady) ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)
-      if (heroImage.isReady) ctx.drawImage(heroImage.element, gs.hero.pos.x, gs.hero.pos.y)
-      if (monsterImage.isReady) ctx.drawImage(monsterImage.element, gs.monster.pos.x, gs.monster.pos.y)
-
-      // Score
-      ctx.fillStyle = "rgb(250, 250, 250)"
-      ctx.font = "24px Helvetica"
-      ctx.textAlign = "left"
-      ctx.textBaseline = "top"
-      ctx.fillText("Goblins caught: " + gs.monstersCaught, 32, 32)
-    }
-
-    var prev = js.Date.now()
-    var oldUpdated : Option[GameState] = None
     // The main game loop
-    val gameLoop = () => {
+    def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = update(delta / 1000)
-      render(gameState)
+      val updated = update(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000)
+
+      if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) {
+        oldUpdated = render(updated)
+      }
 
       prev = now
     }
@@ -70,7 +56,7 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
 
     dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
       e.keyCode match {
-        case Left | Right | Up | Down => keysDown += e.keyCode -> (js.Date.now(), gameState)
+        case Left | Right | Up | Down if oldUpdated.isDefined => keysDown += e.keyCode -> (js.Date.now(), oldUpdated.get)
         case _ =>
       }, useCapture = false)
 
@@ -78,5 +64,21 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
       keysDown -= e.keyCode
     }, useCapture = false)
   }
+  // Draw everything
+  def render(gs: GameState) = {
+    if (bgImage.isReady && heroImage.isReady && monsterImage.isReady) {
+      ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)
+      ctx.drawImage(heroImage.element, gs.hero.pos.x, gs.hero.pos.y)
+      ctx.drawImage(monsterImage.element, gs.monster.pos.x, gs.monster.pos.y)
 
+      // Score
+      ctx.fillStyle = "rgb(250, 250, 250)"
+      ctx.font = "24px Helvetica"
+      ctx.textAlign = "left"
+      ctx.textBaseline = "top"
+      ctx.fillText("Goblins caught: " + gs.monstersCaught, 32, 32)
+      Some(gs)
+    }
+    else None
+  }
 }
