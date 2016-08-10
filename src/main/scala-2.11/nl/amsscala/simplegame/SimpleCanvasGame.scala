@@ -1,62 +1,15 @@
 package nl.amsscala.simplegame
 
 import org.scalajs.dom
+import org.scalajs.dom.ext.KeyCode.{Down, Left, Right, Up}
 
-import scala.Numeric.Implicits.infixNumericOps
 import scala.collection.mutable
 import scala.scalajs.js
 
-case class Position[P: Numeric](x: P, y: P) {
-
-  import Ordering.Implicits.infixOrderingOps
-
-  def +(p: Position[P]) = Position(x + p.x, y + p.y)
-
-  def isInTheCanvas(canvas: dom.html.Canvas, size: P): Boolean = {
-    0.asInstanceOf[P] <= x &&
-      (x + size) <= canvas.width.asInstanceOf[P] &&
-      0.asInstanceOf[P] <= y &&
-      (y + size) <= canvas.height.asInstanceOf[P]
-  }
-
-  def areTouching(posB: Position[P], size: P): Boolean = {
-    x <= (posB.x + size) &&
-      posB.x <= (x + size) &&
-      y <= (posB.y + size) &&
-      posB.y <= (y + size)
-  }
-}
-
-class Monster[T: Numeric](val pos: Position[T]) {
-  def this(x: T, y: T) = this(Position(x, y))
-}
-
-class Hero[A: Numeric](val pos: Position[A]) {
-  def this(x: A, y: A) = this(Position(x, y))
-
-  def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
-}
-
-object Hero {
-  val size = 32
-  val speed = 256
-}
-
-class Image(src: String, var isReady: Boolean = false) {
-  val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
-
-  element.onload = (e: dom.Event) => isReady = true
-  element.src = src
-}
-
-object Image {
-  def apply(src: String) = new Image(src)
-}
-
-object SimpleCanvasGame extends js.JSApp {
+object SimpleCanvasGame extends js.JSApp with Page with Game{
 
   // Keyboard events store
-  val keysDown = mutable.Set.empty[Int]
+  val keysDown = mutable.Map.empty[Int, Double]
 
   def main(): Unit = {
     // Create the canvas
@@ -84,6 +37,7 @@ object SimpleCanvasGame extends js.JSApp {
     def update(modifier: Double) {
       val modif = (Hero.speed * modifier).toInt
       var Position(x, y) = hero.pos
+
       if (keysDown.contains(dom.ext.KeyCode.Left)) x -= modif
       if (keysDown.contains(dom.ext.KeyCode.Right)) x += modif
       if (keysDown.contains(dom.ext.KeyCode.Up)) y -= modif
@@ -113,7 +67,6 @@ object SimpleCanvasGame extends js.JSApp {
       ctx.fillText("Goblins caught: " + monstersCaught, 32, 32)
     }
 
-
     // TODO Make this reactive
     var prev = js.Date.now()
     // The main game loop
@@ -130,12 +83,14 @@ object SimpleCanvasGame extends js.JSApp {
     // Let's play this game!
     reset()
 
-    dom.window.setInterval(gameLoop, 1) // Execute as fast as possible
+    dom.window.setInterval(gameLoop, 20)
   }
 
-  dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) => {
-    keysDown += e.keyCode
-  }, useCapture = false)
+  dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
+    e.keyCode match {
+      case Left | Right | Up | Down => keysDown += e.keyCode -> js.Date.now()
+      case _ =>
+    }, useCapture = false)
 
   dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
     keysDown -= e.keyCode

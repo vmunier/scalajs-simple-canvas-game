@@ -17,6 +17,7 @@ target
 
 # IntelliJ
 .idea
+exportToHTML
 
 # Mac
 .DS_Store
