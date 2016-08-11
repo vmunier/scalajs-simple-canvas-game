@@ -1,9 +1,7 @@
 package nl.amsscala
 package simplegame
 
-import nl.amsscala.simplegame.SimpleCanvasGame.GameState
 import org.scalajs.dom
-
 
 trait Page {
   // Create the canvas

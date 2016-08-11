@@ -1,7 +1,6 @@
 package nl.amsscala
 package simplegame
 
-import nl.amsscala.simplegame.SimpleCanvasGame.GameState
 import org.scalajs.dom
 import org.scalajs.dom.ext.KeyCode._
 import org.scalajs.dom.html
@@ -20,7 +19,7 @@ trait Game {
     def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = updater(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000)
+      val updated = updater(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000).asInstanceOf[GameState]
 
       if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) {
         oldUpdated = SimpleCanvasGame.render(updated)
@@ -38,7 +37,7 @@ trait Game {
       def modif = (Hero.speed * modifier).toInt
       def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
-      val newHero = new SimpleCanvasGame.Hero(keysDown.map(k => directions(k._1)). // Convert pressed keyboard keys to coordinates
+      val newHero = new Hero(keysDown.map(k => directions(k._1)). // Convert pressed keyboard keys to coordinates
         fold(gs.hero.pos) { (z, i) => z + i * modif }) // Compute new position by adding and multiplying.
       if (newHero.isValidPosition(canvas))
       // Are they touching?
@@ -57,21 +56,6 @@ trait Game {
     dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
       keysDown -= e.keyCode
     }, useCapture = false)
-  }
-
-  class Monster[T: Numeric](val pos: Position[T]) {
-    def this(x: T, y: T) = this(Position(x, y))
-  }
-
-  class Hero[A: Numeric](val pos: Position[A]) {
-    def this(x: A, y: A) = this(Position(x, y))
-
-    def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
-  }
-
-  object Hero {
-    val size = 32
-    val speed = 256
   }
 
 }
