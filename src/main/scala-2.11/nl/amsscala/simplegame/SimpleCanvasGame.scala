@@ -13,9 +13,9 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
   // Create the canvas
   val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
   val ctx = canvas.getContext("2d")
-  var prev = js.Date.now()
-  var oldUpdated : Option[GameState] = None
   val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
+  var prev = js.Date.now()
+  var oldUpdated: Option[GameState] = None
 
   def main(): Unit = {
 
@@ -24,7 +24,7 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
     dom.document.body.appendChild(canvas)
 
     // Update game objects
-    def update(gs: GameState, modifier: Double): GameState = {
+    def updater(gs: GameState, modifier: Double): GameState = {
       def modif = (Hero.speed * modifier).toInt
       def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
@@ -42,7 +42,7 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
     def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = update(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000)
+      val updated = updater(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000)
 
       if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) {
         oldUpdated = render(updated)
@@ -64,6 +64,7 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
       keysDown -= e.keyCode
     }, useCapture = false)
   }
+
   // Draw everything
   def render(gs: GameState) = {
     if (bgImage.isReady && heroImage.isReady && monsterImage.isReady) {
@@ -81,4 +82,20 @@ object SimpleCanvasGame extends js.JSApp with Page with Game {
     }
     else None
   }
+
+  // Update game objects
+  def updater(gs: GameState, modifier: Double): GameState = {
+    def modif = (Hero.speed * modifier).toInt
+    def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
+
+    val newHero = new Hero(keysDown.map(k => directions(k._1)). // Convert pressed keyboard keys to coordinates
+      fold(gs.hero.pos) { (z, i) => z + i * modif }) // Compute new position by adding and multiplying.
+    if (newHero.isValidPosition(canvas))
+    // Are they touching?
+      if (newHero.pos.areTouching(gs.monster.pos, Hero.size)) // Reset the game when the player catches a monster
+        new GameState(canvas, gs.monstersCaught)
+      else gs.copy(hero = newHero)
+    else gs
+  }
+
 }
