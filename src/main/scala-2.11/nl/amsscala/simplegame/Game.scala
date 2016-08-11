@@ -14,12 +14,12 @@ trait Game {
   var prev = js.Date.now()
   var oldUpdated: Option[GameState] = None
 
-  def play(canvas : html.Canvas) {
+  def play(canvas: html.Canvas, headless: Boolean) {
     // The main game loop
     def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = updater(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000).asInstanceOf[GameState]
+      val updated = updater(oldUpdated.getOrElse(new GameState(canvas, -1)), delta / 1000)
 
       if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) {
         oldUpdated = SimpleCanvasGame.render(updated)
@@ -27,10 +27,6 @@ trait Game {
 
       prev = now
     }
-
-    // Let's play this game!
-    dom.window.setInterval(gameLoop, 20)
-
 
     // Update game objects
     def updater(gs: GameState, modifier: Double): GameState = {
@@ -47,15 +43,46 @@ trait Game {
       else gs
     }
 
-    dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
-      e.keyCode match {
-        case Left | Right | Up | Down if oldUpdated.isDefined => keysDown += e.keyCode -> (js.Date.now(), oldUpdated.get)
-        case _ =>
+    // Let's play this game!
+    if (!headless) {
+      dom.window.setInterval(gameLoop, 20)
+
+      dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
+        e.keyCode match {
+          case Left | Right | Up | Down if oldUpdated.isDefined => keysDown += e.keyCode -> (js.Date.now(), oldUpdated.get)
+          case _ =>
+        }, useCapture = false)
+
+      dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
+        keysDown -= e.keyCode
       }, useCapture = false)
-
-    dom.window.addEventListener("keyup", (e: dom.KeyboardEvent) => {
-      keysDown -= e.keyCode
-    }, useCapture = false)
+    }
   }
+}
 
+case class GameState(hero: Hero[Int],
+                     monster: Monster[Int],
+                     monstersCaught: Int = 0) {
+  def this(canvas: dom.html.Canvas, oldScore: Int) =
+    this(new Hero(Position(canvas.width / 2, canvas.height / 2)),
+      // Throw the monster somewhere on the screen randomly
+      new Monster(Position(
+        Hero.size + (math.random * (canvas.width - 64)).toInt,
+        Hero.size + (math.random * (canvas.height - 64)).toInt)),
+      oldScore + 1)
+}
+
+class Monster[T: Numeric](val pos: Position[T]) {
+  def this(x: T, y: T) = this(Position(x, y))
+}
+
+class Hero[A: Numeric](val pos: Position[A]) {
+  def this(x: A, y: A) = this(Position(x, y))
+
+  def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
+}
+
+object Hero {
+  val size = 32
+  val speed = 256
 }
