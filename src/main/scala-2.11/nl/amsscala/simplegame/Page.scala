@@ -3,27 +3,13 @@ package simplegame
 
 import nl.amsscala.simplegame.SimpleCanvasGame.GameState
 import org.scalajs.dom
-import org.scalajs.dom.raw.{HTMLAreaElement, HTMLCanvasElement}
 
 
-trait Page /*extends Game*/ {
+trait Page {
   // Create the canvas
   val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
   val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
   val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
-
-
-
-  class Image(src: String, var isReady: Boolean = false) {
-    val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
-
-    element.onload = (e: dom.Event) => isReady = true
-    element.src = src
-  }
-
-  object Image {
-    def apply(src: String) = new Image(src)
-  }
 
   // Draw everything
   def render(gs: GameState) = {
@@ -41,6 +27,17 @@ trait Page /*extends Game*/ {
       Some(gs)
     }
     else None
+  }
+
+  class Image(src: String, var isReady: Boolean = false) {
+    val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
+
+    element.onload = (e: dom.Event) => isReady = true
+    element.src = src
+  }
+
+  object Image {
+    def apply(src: String) = new Image(src)
   }
 
 }

@@ -5,7 +5,7 @@ import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
 import utest.{TestSuite, TestableString}
 
-object SimpleCanvasGameTest extends TestSuite with Game{
+object SimpleCanvasGameTest extends TestSuite with Game {
 
   val tests = TestSuite {
     "isValidPosition" - {
