@@ -10,10 +10,15 @@ import scala.scalajs.js
 
 trait Game {
 
+  /**
+    *
+    * @param canvas     The visual html element
+    * @param headless   An option to run for testing
+    */
   def play(canvas: html.Canvas, headless: Boolean) {
     // Keyboard events store
-    val keysPressed = mutable.Map.empty[Int, (Double, GameState)]
-    var prev = js.Date.now()
+    val keysPressed: keysBufferType = mutable.Map.empty
+    var prev = 0D
     var oldUpdated: Option[GameState] = None
 
     // The main game loop
@@ -22,9 +27,7 @@ trait Game {
       val delta = now - prev
       val updated = oldUpdated.getOrElse(new GameState(canvas, -1)).updater(delta / 1000, keysPressed, canvas)
 
-      if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) {
-        oldUpdated = SimpleCanvasGame.render(updated)
-      }
+      if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) oldUpdated = SimpleCanvasGame.render(updated)
 
       prev = now
     }
@@ -35,7 +38,8 @@ trait Game {
 
       dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
         e.keyCode match {
-          case Left | Right | Up | Down if oldUpdated.isDefined => keysPressed += e.keyCode -> (js.Date.now(), oldUpdated.get)
+          case Left | Right | Up | Down if oldUpdated.isDefined =>
+            keysPressed += e.keyCode -> (js.Date.now(), oldUpdated.get.hero.pos)
           case _ =>
         }, useCapture = false)
 
@@ -46,7 +50,14 @@ trait Game {
   }
 }
 
+/**
+  *
+  * @param hero
+  * @param monster
+  * @param monstersCaught
+  */
 case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
+
   /** Update game objects
     *
     * @param modifier
@@ -54,12 +65,23 @@ case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int
     * @param canvas
     * @return
     */
-  def updater(modifier: Double, keysDown: mutable.Map[Int, (Double, GameState)], canvas: dom.html.Canvas): GameState = {
-    def modif = (Hero.speed * modifier).toInt
+  def updater(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
+
     def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
 
-    val newHero = new Hero(keysDown.map(k => directions(k._1)). // Convert pressed keyboard keys to coordinates
-      fold(hero.pos) { (z, i) => z + i * modif }) // Compute new position by adding and multiplying.
+    /*
+    def displacements: mutable.Iterable[Position[Int]] = keysDown.map { case (key, (timeAtKPress, posAtKPress)) =>
+        directions(key) * (Hero.speed * (now - timeAtKPress) / 1000 ).toInt + posAtKPress - hero.pos
+    }
+
+    val newHero = new Hero(displacements.fold(hero.pos)((z, x)=> z + x))
+    */
+
+    // Convert pressed keyboard keys to coordinates
+    def displacements: mutable.Iterable[Position[Int]] = keysDown.map(k => directions(k._1))
+
+    val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * modifier).toInt })
+
     if (newHero.isValidPosition(canvas))
     // Are they touching?
       if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster

@@ -3,12 +3,18 @@ package nl.amsscala
 import org.scalajs.dom
 
 package object simplegame {
+  type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
 
   case class Position[P: Numeric](x: P, y: P) {
+
     import Numeric.Implicits.infixNumericOps
     import Ordering.Implicits.infixOrderingOps
 
     def +(p: Position[P]) = Position(x + p.x, y + p.y)
+
+    def -(p: Position[P]) = Position(x - p.x, y - p.y)
+
+    def *(p: Position[P]) = Position(x * p.x, y * p.y)
 
     def *(factor: P) = Position(x * factor, y * factor)
 
