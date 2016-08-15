@@ -21,14 +21,14 @@ scalaVersion in ThisBuild := "2.11.8"
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.1",
   "com.lihaoyi" %%% "utest" % "0.4.3" % "test",
-  "org.scalatest" %% "scalatest" % "3.0.0" % "test")
+  "org.scalatest" %%% "scalatest" % "3.0.0" % "test")
 
 // ** Scala.js configuration **
 // lazy val root = (project in file(".")).
 enablePlugins(ScalaJSPlugin)
 // needed for tests
 jsDependencies += RuntimeDOM
-testFrameworks += new TestFramework("utest.runner.Framework")
+//testFrameworks += new TestFramework("utest.runner.Framework")
 
 // If true, a launcher script src="../[normalizedName]-launcher.js will be generated
 // that always calls the main def indicated by the used JSApp trait.
