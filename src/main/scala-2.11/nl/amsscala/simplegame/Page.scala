@@ -41,4 +41,5 @@ trait Page {
   canvas.width = dom.window.innerWidth.toInt - 8
   canvas.height = dom.window.innerHeight.toInt - 38
   dom.document.body.appendChild(canvas)
+
 }

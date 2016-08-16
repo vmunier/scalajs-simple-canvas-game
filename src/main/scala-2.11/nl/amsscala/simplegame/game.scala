@@ -58,16 +58,19 @@ trait Game {
 case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
 
   /**
-    *  Update game objects
+    * Update game objects
+    *
     * @param modifier
     * @param keysDown
     * @param canvas The visual html element
-    * @return       Updated GameState
+    * @return Updated GameState
     */
   def updater(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
     // Key to direction translation
-    def directions = Map(Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1))
+    def directions = Map(
+      Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)).
+      withDefaultValue(Position(0, 0))
 
     // Convert pressed keyboard keys to coordinates
     def displacements: mutable.Iterable[Position[Int]] = keysDown.map(k => directions(k._1))
@@ -104,7 +107,16 @@ case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int
     oldScore + 1)
 }
 
-class Monster[T: Numeric](val pos: Position[T])
+class Monster[T: Numeric](val pos: Position[T]) {
+  def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
+
+  override def equals(that: Any): Boolean = that match {
+    case that: Monster[T] => this.pos == that.pos
+    case _ => false
+  }
+
+  override def toString = s"${this.getClass.getSimpleName} $pos"
+}
 
 class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos) {
   /** Auxiliary constructor
@@ -114,7 +126,6 @@ class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos) {
     */
   def this(x: A, y: A) = this(Position(x, y))
 
-  def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isInTheCanvas(canvas, Hero.size.asInstanceOf[A])
 }
 
 object Hero {

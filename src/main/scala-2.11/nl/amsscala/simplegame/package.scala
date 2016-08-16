@@ -3,6 +3,7 @@ package nl.amsscala
 import org.scalajs.dom
 
 package object simplegame {
+  // Expiriment with timestamp and position, displacement is a function of time
   type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
 
   case class Position[P: Numeric](x: P, y: P) {
@@ -18,7 +19,7 @@ package object simplegame {
 
     def *(factor: P) = Position(x * factor, y * factor)
 
-    def isInTheCanvas(canvas: dom.html.Canvas, size: P): Boolean = {
+    def isWithinTheCanvas(canvas: dom.html.Canvas, size: P): Boolean = {
       0.asInstanceOf[P] <= x &&
         (x + size) <= canvas.width.asInstanceOf[P] &&
         0.asInstanceOf[P] <= y &&
