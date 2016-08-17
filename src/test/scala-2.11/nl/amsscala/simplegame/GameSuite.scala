@@ -52,14 +52,14 @@ class GameSuite extends SuiteSpec with Game {
         // Illegal key code
         game.updateGame(1D, mutable.Map(0 -> dummyTimeStamp), canvas) shouldBe game
       }
-      it("bad path") { // No move due a of out canvas limit case
+      it("bad path") {// No move due a of out canvas limit case
         game.updateGame(1.48828125, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
       }
       it("experiment") {
         canvas.setAttribute("crossOrigin", "Anonymous")
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-        println("Data", ctx.getImageData( 0, 0, canvas.width, canvas.height).hashCode())
+        println("Data", ctx.getImageData(0, 0, canvas.width, canvas.height).hashCode())
       }
 
     }
