@@ -8,6 +8,7 @@ import scala.collection.mutable
 import scala.scalajs.js
 
 trait Game {
+  val framesPerSec = 30
 
   /**
     *
@@ -24,7 +25,7 @@ trait Game {
     def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = oldUpdated.getOrElse(new GameState(canvas, -1)).updater(delta / 1000, keysPressed, canvas)
+      val updated = oldUpdated.getOrElse(new GameState(canvas, -1)).update(delta / 1000, keysPressed, canvas)
 
       if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) oldUpdated = SimpleCanvasGame.render(updated)
 
@@ -33,7 +34,7 @@ trait Game {
 
     // Let's play this game!
     if (!headless) {
-      dom.window.setInterval(gameLoop, 20)
+      dom.window.setInterval(gameLoop, 1000 / framesPerSec)
 
       dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>
         e.keyCode match {
@@ -65,7 +66,7 @@ case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int
     * @param canvas The visual html element
     * @return Updated GameState
     */
-  def updater(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
+  def update(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
     // Key to direction translation
     def directions = Map(

@@ -38,8 +38,10 @@ trait Page {
     def apply(src: String) = new Image(src)
   }
 
-  canvas.width = dom.window.innerWidth.toInt - 8
-  canvas.height = dom.window.innerHeight.toInt - 38
+  canvas.width = dom.window.innerWidth.toInt
+  canvas.height = dom.window.innerHeight.toInt - 32
+  canvas.textContent = "Your browser doesn't support the HTML5 CANVAS tag."
+
   dom.document.body.appendChild(canvas)
 
 }

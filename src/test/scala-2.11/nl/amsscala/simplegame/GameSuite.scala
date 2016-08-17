@@ -37,24 +37,29 @@ class GameSuite extends SuiteSpec with Game {
       val game = new GameState(canvas, -1)
 
       it("good path") {
-        game.updater(1D, mutable.Map.empty, canvas) shouldBe game
+        game.update(1D, mutable.Map.empty, canvas) shouldBe game
 
-        game.updater(1D, mutable.Map(Left -> dummyTimeStamp, Right -> dummyTimeStamp), canvas) shouldBe game
+        game.update(1D, mutable.Map(Left -> dummyTimeStamp, Right -> dummyTimeStamp), canvas) shouldBe game
 
-        game.updater(1D,
+        game.update(1D,
           mutable.Map(Left -> dummyTimeStamp, Right -> dummyTimeStamp, Up -> dummyTimeStamp, Down -> dummyTimeStamp),
           canvas) shouldBe game
 
-        game.updater(1D, mutable.Map(Left -> dummyTimeStamp, Up -> dummyTimeStamp), canvas) shouldBe
+        game.update(1D, mutable.Map(Left -> dummyTimeStamp, Up -> dummyTimeStamp), canvas) shouldBe
           game.copy(hero = new Hero(game.hero.pos - Position(Hero.speed, Hero.speed)))
       }
       it("sad path") {
         // Illegal key code
-        game.updater(1D, mutable.Map(0 -> dummyTimeStamp), canvas) shouldBe game
+        game.update(1D, mutable.Map(0 -> dummyTimeStamp), canvas) shouldBe game
       }
       it("bad path") {
         // No move due a of out canvas limit case
-        game.updater(1.48828125, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
+        game.update(1.48828125, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
+      }
+      it("experiment") {
+        val ctx = canvas.getContext("2d")
+        // val data = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        println("Data" /*, canvas.toDataURL("png")*/)
       }
 
     }

@@ -20,8 +20,9 @@ scalaVersion in ThisBuild := "2.11.8"
 
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.1",
-  "com.lihaoyi" %%% "utest" % "0.4.3" % "test",
-  "org.scalatest" %%% "scalatest" % "3.0.0" % "test")
+  "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
+  "com.lihaoyi" %%% "scalatags" % "0.6.0"
+)
 
 // ** Scala.js configuration **
 // lazy val root = (project in file(".")).
@@ -34,3 +35,14 @@ jsDependencies += RuntimeDOM
 // that always calls the main def indicated by the used JSApp trait.
 persistLauncher := true
 persistLauncher in Test := false
+
+// Will create [normalizedName]-jsdeps.js containing all JavaScript libraries
+// jsDependencies ++= Seq("org.webjars" % "jquery" % "3.1.0" / "3.1.0/jquery.js")
+// jsDependencies += "org.webjars" % "bootstrap" % "3.3.6" / "bootstrap.js" minified "bootstrap.min.js" dependsOn "2.2.4/jquery.js"
+
+// Workbench settings **
+workbenchSettings
+refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
+
+// Workbench has to know how to restart your application.
+bootSnippet := "nl.amsscala.simplegame.SimpleCanvasGame().main();"
