@@ -3,7 +3,7 @@ package nl.amsscala
 import org.scalajs.dom
 
 package object simplegame {
-  // Expiriment with timestamp and position, displacement is a function of time
+  // Experimental timestamp and position, displacement is a function of time
   type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
 
   case class Position[P: Numeric](x: P, y: P) {

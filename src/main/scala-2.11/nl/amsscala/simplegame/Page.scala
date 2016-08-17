@@ -6,10 +6,15 @@ import org.scalajs.dom
 trait Page {
   // Create the canvas
   val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
-  val ctx = canvas.getContext("2d")// .asInstanceOf[dom.CanvasRenderingContext2D]
+  val ctx = canvas.getContext("2d") // .asInstanceOf[dom.CanvasRenderingContext2D]
   val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
 
-  // Draw everything
+  /**
+    * Draw everything
+    *
+    * @param gs
+    * @return None if not ready else the same GameState if drawn
+    */
   def render(gs: GameState) = {
     if (bgImage.isReady && heroImage.isReady && monsterImage.isReady) {
       ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)

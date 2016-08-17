@@ -25,9 +25,10 @@ trait Game {
     def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = oldUpdated.getOrElse(new GameState(canvas, -1)).update(delta / 1000, keysPressed, canvas)
+      val updated = oldUpdated.getOrElse(new GameState(canvas, -1)).updateGame(delta / 1000, keysPressed, canvas)
 
-      if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos)) oldUpdated = SimpleCanvasGame.render(updated)
+      if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos))
+        oldUpdated = SimpleCanvasGame.render(updated)
 
       prev = now
     }
@@ -66,10 +67,10 @@ case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int
     * @param canvas The visual html element
     * @return Updated GameState
     */
-  def update(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
+  def updateGame(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
-    // Key to direction translation
-    def directions = Map(
+
+    def directions = Map( // Key to direction translation
       Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)).
       withDefaultValue(Position(0, 0))
 
@@ -86,8 +87,7 @@ case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int
 
     val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * modifier).toInt })
 
-    if (newHero.isValidPosition(canvas))
-    // Are they touching?
+    if (newHero.isValidPosition(canvas)) // Are they touching?
       if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster
         new GameState(canvas, monstersCaught)
       else copy(hero = newHero)
