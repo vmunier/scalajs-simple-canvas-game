@@ -32,9 +32,9 @@ trait Page {
     else None
   }
 
-  class Image(src: String, var isReady: Boolean = false) {
+  class Image(private val src: String, var isReady: Boolean = false) {
     val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
-
+    element.setAttribute("crossOrigin", "Anonymous")
     element.onload = (e: dom.Event) => isReady = true
     element.src = src
   }

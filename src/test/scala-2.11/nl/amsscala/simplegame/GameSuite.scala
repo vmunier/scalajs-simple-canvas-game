@@ -56,7 +56,9 @@ class GameSuite extends SuiteSpec with Game {
         game.updateGame(1.48828125, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
       }
       it("experiment") {
+        canvas.setAttribute("crossOrigin", "Anonymous")
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
+
         println("Data", ctx.getImageData( 0, 0, canvas.width, canvas.height).hashCode())
       }
 
