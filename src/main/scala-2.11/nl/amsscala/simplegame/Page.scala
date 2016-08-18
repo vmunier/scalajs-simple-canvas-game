@@ -6,15 +6,15 @@ import org.scalajs.dom
 protected trait Page {
   // Create the canvas
   protected val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
-  private val ctx = canvas.getContext("2d")// .asInstanceOf[dom.CanvasRenderingContext2D]
+  private val ctx = canvas.getContext("2d") // .asInstanceOf[dom.CanvasRenderingContext2D]
   private val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
 
   /**
-    * Draw everything
-    *
-    * @param gs Game state to make graphical
-    * @return None if not ready else the same GameState if drawn
-    */
+   * Draw everything
+   *
+   * @param gs Game state to make graphical
+   * @return None if not ready else the same GameState if drawn
+   */
   protected[simplegame] def render(gs: GameState) = {
     if (bgImage.isReady && heroImage.isReady && monsterImage.isReady) {
       ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)
@@ -28,13 +28,12 @@ protected trait Page {
       ctx.textBaseline = "top"
       ctx.fillText("Goblins caught: " + gs.monstersCaught, 32, 32)
       Some(gs)
-    }
-    else None
+    } else None
   }
 
   protected class Image(private val src: String, var isReady: Boolean = false) {
     val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
-    element.setAttribute("crossOrigin", "anonymous")
+    // element.setAttribute("crossOrigin", "anonymous")
     element.onload = (e: dom.Event) => isReady = true
     element.src = src
   }

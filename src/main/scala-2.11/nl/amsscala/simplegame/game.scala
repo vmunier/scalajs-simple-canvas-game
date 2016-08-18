@@ -51,7 +51,8 @@ protected trait Game {
   }
 }
 
-/** GameState constructor
+/**
+  * GameState constructor
   *
   * @param hero
   * @param monster
@@ -69,13 +70,12 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
     */
   protected[simplegame] def updateGame(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
-
     def directions = Map(// Key to direction translation
       Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)).
       withDefaultValue(Position(0, 0))
 
     // Convert pressed keyboard keys to coordinates
-    def displacements: mutable.Iterable[Position[Int]] = keysDown.map(k => directions(k._1))
+    def displacements: mutable.Iterable[Position[Int]] = keysDown.map { case (k, _) => directions(k) }
 
     /* Experimental, does not properly work
     def displacements: mutable.Iterable[Position[Int]] = keysDown.map { case (key, (timeAtKPress, posAtKPress)) =>
@@ -94,18 +94,22 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
     else this
   }
 
-  /** Auxiliary constructor
+  /**
+    * Auxiliary constructor
     *
     * @param canvas   The visual html element
     * @param oldScore Score accumulator
     */
   protected[simplegame] def this(canvas: dom.html.Canvas, oldScore: Int) =
-  this(new Hero(Position(canvas.width / 2, canvas.height / 2)),
+  this(
+    new Hero(Position(canvas.width / 2, canvas.height / 2)),
     // Throw the monster somewhere on the screen randomly
     new Monster(Position(
       Hero.size + (math.random * (canvas.width - 64)).toInt,
-      Hero.size + (math.random * (canvas.height - 64)).toInt)),
-    oldScore + 1)
+      Hero.size + (math.random * (canvas.height - 64)).toInt
+    )),
+    oldScore + 1
+  )
 }
 
 protected class Monster[T: Numeric](val pos: Position[T]) {
@@ -120,7 +124,8 @@ protected class Monster[T: Numeric](val pos: Position[T]) {
 }
 
 protected class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos) {
-  /** Auxiliary constructor
+  /**
+    * Auxiliary constructor
     *
     * @param x
     * @param y

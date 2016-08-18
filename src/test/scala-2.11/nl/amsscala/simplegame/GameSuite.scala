@@ -60,7 +60,7 @@ class GameSuite extends SuiteSpec with Game {
 
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-        println("Data", ctx.getImageData(0, 0, canvas.width, canvas.height).hashCode())
+//        println("Data", ctx.getImageData(0, 0, canvas.width, canvas.height).hashCode())
       }
 
     }
