@@ -30,7 +30,7 @@ class GameSuite extends SuiteSpec with Game {
   describe("The Game") {
     describe("should tested if it within the limits") {
       val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
-      canvas.setAttribute("crossOrigin", "Anonymous")
+      canvas.setAttribute("crossOrigin", "anonymous")
       canvas.width = 1358 // 1366
       canvas.height = 760 // 768
 

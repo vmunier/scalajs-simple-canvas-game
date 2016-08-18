@@ -41,9 +41,12 @@ persistLauncher in Test := false
 // jsDependencies += "org.webjars" % "bootstrap" % "3.3.6" / "bootstrap.js" minified "bootstrap.min.js" dependsOn "2.2.4/jquery.js"
 
 // Workbench settings **
-if (sys.BooleanProp.keyExists("CI")) Seq.empty else workbenchSettings
-
-refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
+if (sys.BooleanProp.keyExists("CI")) Seq.empty
+else {
+  val ret = workbenchSettings
+  refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
+  ret
+}
 
 // Workbench has to know how to restart your application.
 bootSnippet := "nl.amsscala.simplegame.SimpleCanvasGame().main();"
