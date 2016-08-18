@@ -2,7 +2,7 @@ package nl.amsscala
 package simplegame
 
 import org.scalajs.dom
-import org.scalajs.dom.ext.KeyCode.{Down, Left, Right, Up}
+import org.scalajs.dom.ext.KeyCode.{ Down, Left, Right, Up }
 
 import scala.collection.mutable
 
@@ -53,14 +53,14 @@ class GameSuite extends SuiteSpec with Game {
         // Illegal key code
         game.updateGame(1D, mutable.Map(0 -> dummyTimeStamp), canvas) shouldBe game
       }
-      it("bad path") {// No move due a of out canvas limit case
+      it("bad path") { // No move due a of out canvas limit case
         game.updateGame(1.48828125, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
       }
       it("experiment") {
 
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-//        println("Data", ctx.getImageData(0, 0, canvas.width, canvas.height).hashCode())
+        // println("Data", ctx.getImageData(0, 0, canvas.width, canvas.height).hashCode())
       }
 
     }

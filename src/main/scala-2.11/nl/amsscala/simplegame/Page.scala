@@ -26,7 +26,7 @@ protected trait Page {
       ctx.font = "24px Helvetica"
       ctx.textAlign = "left"
       ctx.textBaseline = "top"
-      ctx.fillText("Goblins caught: " + gs.monstersCaught, 32, 32)
+      ctx.fillText(f"Goblins caught: ${gs.monstersCaught}%03d", 32, 32)
       Some(gs)
     } else None
   }

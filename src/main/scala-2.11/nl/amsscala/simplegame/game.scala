@@ -2,7 +2,7 @@ package nl.amsscala
 package simplegame
 
 import org.scalajs.dom
-import org.scalajs.dom.ext.KeyCode.{Down, Left, Right, Up}
+import org.scalajs.dom.ext.KeyCode.{ Down, Left, Right, Up }
 
 import scala.collection.mutable
 import scala.scalajs.js
@@ -11,10 +11,10 @@ protected trait Game {
   private val framesPerSec = 30
 
   /**
-    *
-    * @param canvas   The visual html element
-    * @param headless An option to run for testing
-    */
+   *
+   * @param canvas   The visual html element
+   * @param headless An option to run for testing
+   */
   protected def play(canvas: dom.html.Canvas, headless: Boolean) {
     // Keyboard events store
     val keysPressed: keysBufferType = mutable.Map.empty
@@ -52,26 +52,27 @@ protected trait Game {
 }
 
 /**
-  * GameState constructor
-  *
-  * @param hero
-  * @param monster
-  * @param monstersCaught
-  */
+ * GameState constructor
+ *
+ * @param hero
+ * @param monster
+ * @param monstersCaught
+ */
 protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
 
   /**
-    * Update game objects
-    *
-    * @param modifier
-    * @param keysDown
-    * @param canvas The visual html element
-    * @return Updated GameState
-    */
+   * Update game objects
+   *
+   * @param modifier
+   * @param keysDown
+   * @param canvas The visual html element
+   * @return Updated GameState
+   */
   protected[simplegame] def updateGame(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
-    def directions = Map(// Key to direction translation
-      Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)).
+    def directions = Map( // Key to direction translation
+      Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)
+    ).
       withDefaultValue(Position(0, 0))
 
     // Convert pressed keyboard keys to coordinates
@@ -95,21 +96,21 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
   }
 
   /**
-    * Auxiliary constructor
-    *
-    * @param canvas   The visual html element
-    * @param oldScore Score accumulator
-    */
+   * Auxiliary constructor
+   *
+   * @param canvas   The visual html element
+   * @param oldScore Score accumulator
+   */
   protected[simplegame] def this(canvas: dom.html.Canvas, oldScore: Int) =
-  this(
-    new Hero(Position(canvas.width / 2, canvas.height / 2)),
-    // Throw the monster somewhere on the screen randomly
-    new Monster(Position(
-      Hero.size + (math.random * (canvas.width - 64)).toInt,
-      Hero.size + (math.random * (canvas.height - 64)).toInt
-    )),
-    oldScore + 1
-  )
+    this(
+      new Hero(Position(canvas.width / 2, canvas.height / 2)),
+      // Throw the monster somewhere on the screen randomly
+      new Monster(Position(
+        Hero.size + (math.random * (canvas.width - 64)).toInt,
+        Hero.size + (math.random * (canvas.height - 64)).toInt
+      )),
+      oldScore + 1
+    )
 }
 
 protected class Monster[T: Numeric](val pos: Position[T]) {
@@ -125,11 +126,11 @@ protected class Monster[T: Numeric](val pos: Position[T]) {
 
 protected class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos) {
   /**
-    * Auxiliary constructor
-    *
-    * @param x
-    * @param y
-    */
+   * Auxiliary constructor
+   *
+   * @param x
+   * @param y
+   */
   def this(x: A, y: A) = this(Position(x, y))
 
 }
