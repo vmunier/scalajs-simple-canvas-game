@@ -8,10 +8,9 @@ scala:
 jdk:
   - oraclejdk8
 sudo: false
-notifications:
-  email:
-    recipients:
-    - vdenberg+Travis@gmail.com
+
+env:
+- CI=travis
 
 branches:
   only:

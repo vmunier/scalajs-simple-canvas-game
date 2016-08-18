@@ -41,7 +41,8 @@ persistLauncher in Test := false
 // jsDependencies += "org.webjars" % "bootstrap" % "3.3.6" / "bootstrap.js" minified "bootstrap.min.js" dependsOn "2.2.4/jquery.js"
 
 // Workbench settings **
-workbenchSettings
+if (sys.BooleanProp.keyExists("CI")) Seq.empty else workbenchSettings
+
 refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
 
 // Workbench has to know how to restart your application.
