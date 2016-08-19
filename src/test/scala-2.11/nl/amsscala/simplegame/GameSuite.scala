@@ -66,10 +66,12 @@ class GameSuite extends SuiteSpec with Game with Page {
         canvas.setAttribute("crossOrigin", "anonymous")
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
+        /*
         val y: scala.collection.mutable.Seq[Int] =
           ctx.getImageData(0, 0, canvas.width, canvas.height).data // .asInstanceOf[js.Array[Int]]
 
         println(s"Data, ${y.hashCode()}")
+*/
 
       }
 
