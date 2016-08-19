@@ -2,9 +2,13 @@ package nl.amsscala
 
 import org.scalajs.dom
 
+/**
+ * Provides generic classes and operators for dealing with 2D positions.
+ *
+ */
 package object simplegame {
   // Experimental timestamp and position, displacement is a function of time
-  type keysBufferType = scala.collection.mutable.Map[Int, Tuple2[Double, Position[Int]]]
+  type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
 
   protected[simplegame] case class Position[P: Numeric](x: P, y: P) {
 

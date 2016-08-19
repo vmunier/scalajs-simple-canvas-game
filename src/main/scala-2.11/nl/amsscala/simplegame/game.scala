@@ -7,10 +7,14 @@ import org.scalajs.dom.ext.KeyCode.{ Down, Left, Right, Up }
 import scala.collection.mutable
 import scala.scalajs.js
 
+/**
+ *
+ */
 protected trait Game {
   private val framesPerSec = 30
 
   /**
+   * Initialize Game loop
    *
    * @param canvas   The visual html element
    * @param headless An option to run for testing
@@ -54,21 +58,21 @@ protected trait Game {
 /**
  * GameState constructor
  *
- * @param hero
- * @param monster
- * @param monstersCaught
+ * @param hero           Hero object with its position
+ * @param monster        Monster object with its position
+ * @param monstersCaught The score
  */
 protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
 
   /**
-   * Update game objects
+   * Update game objects according the pressed keys.
    *
-   * @param modifier
-   * @param keysDown
-   * @param canvas The visual html element
-   * @return Updated GameState
+   * @param latency  Passed time difference to adjust displacement.
+   * @param keysDown Collection of key currently pressed.
+   * @param canvas   The visual html element.
+   * @return         Conditional updated GameState, not changed or start GameState.
    */
-  protected[simplegame] def updateGame(modifier: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
+  protected[simplegame] def updateGame(latency: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
     def directions = Map( // Key to direction translation
       Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)
@@ -86,7 +90,7 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
     val newHero = new Hero(displacements.fold(hero.pos)((z, x)=> z + x))
     */
 
-    val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * modifier).toInt })
+    val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * latency).toInt })
 
     if (newHero.isValidPosition(canvas)) // Are they touching?
       if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster
@@ -96,23 +100,31 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
   }
 
   /**
-   * Auxiliary constructor
+   * Auxiliary GameState constructor
+   *
+   * Creates a start state, Hero centric and Monster random positions
    *
    * @param canvas   The visual html element
    * @param oldScore Score accumulator
    */
-  protected[simplegame] def this(canvas: dom.html.Canvas, oldScore: Int) =
+  protected[simplegame] def this(canvas: dom.html.Canvas, oldScore: Int) {
     this(
-      new Hero(Position(canvas.width / 2, canvas.height / 2)),
+      Hero(canvas.width / 2, canvas.height / 2),
       // Throw the monster somewhere on the screen randomly
-      new Monster(Position(
+      Monster(
         Hero.size + (math.random * (canvas.width - 64)).toInt,
         Hero.size + (math.random * (canvas.height - 64)).toInt
-      )),
+      ),
       oldScore + 1
     )
+  }
 }
 
+/**
+ *
+ * @param pos
+ * @tparam T
+ */
 protected class Monster[T: Numeric](val pos: Position[T]) {
   def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
 
@@ -124,18 +136,27 @@ protected class Monster[T: Numeric](val pos: Position[T]) {
   override def toString = s"${this.getClass.getSimpleName} $pos"
 }
 
-protected class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos) {
-  /**
-   * Auxiliary constructor
-   *
-   * @param x
-   * @param y
-   */
-  def this(x: A, y: A) = this(Position(x, y))
-
+/**
+ *
+ */
+protected object Monster {
+  // def apply[T: Numeric](pos: Position[T]) = new Monster(pos)
+  def apply[T: Numeric](x: T, y: T) = new Monster(Position(x, y))
 }
 
-private object Hero {
+/**
+ * @param pos
+ * @tparam A
+ */
+protected class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos)
+
+/**
+ *
+ */
+protected object Hero {
   val size = 32
   val speed = 256
+
+  // def apply[T: Numeric](pos: Position[T]) = new Hero(pos)
+  def apply[T: Numeric](x: T, y: T) = new Hero(Position(x, y))
 }

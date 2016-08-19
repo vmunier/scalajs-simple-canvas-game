@@ -40,6 +40,9 @@ persistLauncher in Test := false
 // jsDependencies ++= Seq("org.webjars" % "jquery" % "3.1.0" / "3.1.0/jquery.js")
 // jsDependencies += "org.webjars" % "bootstrap" % "3.3.6" / "bootstrap.js" minified "bootstrap.min.js" dependsOn "2.2.4/jquery.js"
 
+// ScalaTest settings //
+// testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oF")
+
 // Workbench settings **
 if (sys.env.isDefinedAt("CI")) {
   println("Workbench disabled", sys.env.getOrElse("CI", "?"))
@@ -47,9 +50,10 @@ if (sys.env.isDefinedAt("CI")) {
 } else {
   println("Workbench enabled")
   val ret = workbenchSettings
-  refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
   ret
 }
 
+refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
+
 // Workbench has to know how to restart your application.
-bootSnippet := "nl.amsscala.simplegame.SimpleCanvasGame().main();"
+bootSnippet := /*"nl.amsscala.simplegame.*/"SimpleCanvasGame().main();"
