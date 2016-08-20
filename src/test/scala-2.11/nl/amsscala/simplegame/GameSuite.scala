@@ -36,7 +36,7 @@ class GameSuite extends SuiteSpec with Game with Page {
       canvas.height = 760 // 768
 
       val dummyTimeStamp = (0D, Position(0, 0))
-      val game = (new GameState(canvas, -1)).copy(monster = Monster(0, 0)) // Keep the monster out of site
+      val game = new GameState(canvas, -1).copy(monster = Monster(0, 0)) // Keep the monster out of site
 
       it("good path") {
         game.updateGame(1D, mutable.Map.empty, canvas) shouldBe game

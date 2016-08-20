@@ -27,8 +27,11 @@ libraryDependencies ++= Seq(
 // ** Scala.js configuration **
 // lazy val root = (project in file(".")).
 enablePlugins(ScalaJSPlugin)
-// needed for tests
+
+// Needed for tests
 jsDependencies += RuntimeDOM
+scalaJSUseRhino in Global := false
+
 //testFrameworks += new TestFramework("utest.runner.Framework")
 
 // If true, a launcher script src="../[normalizedName]-launcher.js will be generated

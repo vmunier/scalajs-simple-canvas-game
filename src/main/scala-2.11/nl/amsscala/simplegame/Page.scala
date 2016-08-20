@@ -48,6 +48,7 @@ protected trait Page {
 
   canvas.width = dom.window.innerWidth.toInt
   canvas.height = dom.window.innerHeight.toInt - 32
+  println(s"Dimension of canvas set to ${canvas.width},${canvas}")
   canvas.textContent = "Your browser doesn't support the HTML5 CANVAS tag."
 
   dom.document.body.appendChild(canvas)
