@@ -10,8 +10,8 @@ protected trait Page {
   // Create the canvas
   protected val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
   canvas.setAttribute("crossOrigin", "anonymous")
-  private val ctx = canvas.getContext("2d") // .asInstanceOf[dom.CanvasRenderingContext2D]
-  private val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
+  private[this] val ctx = canvas.getContext("2d") // .asInstanceOf[dom.CanvasRenderingContext2D]
+  private[this] val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
 
   /**
    * Draw everything
@@ -35,14 +35,14 @@ protected trait Page {
     } else None
   }
 
-  protected class Image(private val src: String, var isReady: Boolean = false) {
+  private class Image(private[this] val src: String, var isReady: Boolean = false) {
     val element = dom.document.createElement("img").asInstanceOf[dom.raw.HTMLImageElement]
     // element.setAttribute("crossOrigin", "anonymous")
     element.onload = (e: dom.Event) => isReady = true
     element.src = src
   }
 
-  private object Image {
+  private[this] object Image {
     def apply(src: String) = new Image(src)
   }
 

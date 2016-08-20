@@ -10,7 +10,7 @@ package object simplegame {
   // Experimental timestamp and position, displacement is a function of time
   type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
 
-  protected[simplegame] case class Position[P: Numeric](x: P, y: P) {
+  case class Position[P: Numeric](x: P, y: P) {
 
     import Numeric.Implicits.infixNumericOps
     import Ordering.Implicits.infixOrderingOps

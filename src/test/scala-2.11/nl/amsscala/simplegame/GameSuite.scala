@@ -36,7 +36,7 @@ class GameSuite extends SuiteSpec with Game with Page {
       canvas.height = 760 // 768
 
       val dummyTimeStamp = (0D, Position(0, 0))
-      val game = new GameState(canvas, -1)
+      val game = (new GameState(canvas, -1)).copy(monster = Monster(0, 0)) // Keep the monster out of site
 
       it("good path") {
         game.updateGame(1D, mutable.Map.empty, canvas) shouldBe game
@@ -66,13 +66,10 @@ class GameSuite extends SuiteSpec with Game with Page {
         canvas.setAttribute("crossOrigin", "anonymous")
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-        /*
         val y: scala.collection.mutable.Seq[Int] =
           ctx.getImageData(0, 0, canvas.width, canvas.height).data // .asInstanceOf[js.Array[Int]]
 
         println(s"Data, ${y.hashCode()}")
-*/
-
       }
 
     }

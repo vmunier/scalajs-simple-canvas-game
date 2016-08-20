@@ -11,7 +11,7 @@ import scala.scalajs.js
  *
  */
 protected trait Game {
-  private val framesPerSec = 30
+  private[this] val framesPerSec = 30
 
   /**
    * Initialize Game loop
@@ -62,7 +62,7 @@ protected trait Game {
  * @param monster        Monster object with its position
  * @param monstersCaught The score
  */
-protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
+private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
 
   /**
    * Update game objects according the pressed keys.
@@ -72,12 +72,11 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
    * @param canvas   The visual html element.
    * @return         Conditional updated GameState, not changed or start GameState.
    */
-  protected[simplegame] def updateGame(latency: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
+  def updateGame(latency: Double, keysDown: keysBufferType, canvas: dom.html.Canvas): GameState = {
 
     def directions = Map( // Key to direction translation
       Left -> Position(-1, 0), Right -> Position(1, 0), Up -> Position(0, -1), Down -> Position(0, 1)
-    ).
-      withDefaultValue(Position(0, 0))
+    ).withDefaultValue(Position(0, 0))
 
     // Convert pressed keyboard keys to coordinates
     def displacements: mutable.Iterable[Position[Int]] = keysDown.map { case (k, _) => directions(k) }
@@ -107,14 +106,11 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
    * @param canvas   The visual html element
    * @param oldScore Score accumulator
    */
-  protected[simplegame] def this(canvas: dom.html.Canvas, oldScore: Int) {
+  def this(canvas: dom.html.Canvas, oldScore: Int) {
     this(
       Hero(canvas.width / 2, canvas.height / 2),
       // Throw the monster somewhere on the screen randomly
-      Monster(
-        Hero.size + (math.random * (canvas.width - 64)).toInt,
-        Hero.size + (math.random * (canvas.height - 64)).toInt
-      ),
+      Monster((math.random * (canvas.width - Hero.size)).toInt, (math.random * (canvas.height - Hero.size)).toInt),
       oldScore + 1
     )
   }
@@ -125,8 +121,9 @@ protected case class GameState(hero: Hero[Int], monster: Monster[Int], monstersC
  * @param pos
  * @tparam T
  */
-protected class Monster[T: Numeric](val pos: Position[T]) {
-  def isValidPosition(canvas: dom.html.Canvas): Boolean = pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
+private class Monster[T: Numeric](val pos: Position[T]) {
+  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas): Boolean =
+    pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
 
   override def equals(that: Any): Boolean = that match {
     case that: Monster[T] => this.pos == that.pos
@@ -139,7 +136,7 @@ protected class Monster[T: Numeric](val pos: Position[T]) {
 /**
  *
  */
-protected object Monster {
+private object Monster {
   // def apply[T: Numeric](pos: Position[T]) = new Monster(pos)
   def apply[T: Numeric](x: T, y: T) = new Monster(Position(x, y))
 }
@@ -148,12 +145,12 @@ protected object Monster {
  * @param pos
  * @tparam A
  */
-protected class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos)
+private class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos)
 
 /**
- *
+ * Compagnion object of class Hero
  */
-protected object Hero {
+private object Hero {
   val size = 32
   val speed = 256
 
