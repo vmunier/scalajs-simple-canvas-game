@@ -39,6 +39,7 @@ protected trait Game {
 
     // Let's play this game!
     if (!headless) {
+      // ToDo mobile application navigation
       dom.window.setInterval(gameLoop, 1000 / framesPerSec)
 
       dom.window.addEventListener("keydown", (e: dom.KeyboardEvent) =>

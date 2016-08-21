@@ -5,9 +5,8 @@ import org.scalajs.dom
 import org.scalajs.dom.ext.KeyCode.{ Down, Left, Right, Up }
 
 import scala.collection.mutable
-import scala.scalajs.js
 
-class GameSuite extends SuiteSpec with Game with Page {
+class GameSuite extends SuiteSpec {
 
   describe("A Hero") {
     describe("should tested within the limits") {
@@ -29,28 +28,53 @@ class GameSuite extends SuiteSpec with Game with Page {
   }
 
   describe("The Game") {
-    describe("should tested if it within the limits") {
-      // val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
-      // canvas.setAttribute("crossOrigin", "anonymous")
+    describe("should tested by navigation keys") {
+      import GameSuite.{ dummyTimeStamp, games }
+
+      val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
+      canvas.setAttribute("crossOrigin", "anonymous")
       canvas.width = 1242 // 1366
       canvas.height = 674 // 768
 
-      val dummyTimeStamp = (0D, Position(0, 0))
       val game = new GameState(canvas, -1).copy(monster = Monster(0, 0)) // Keep the monster out of site
 
       it("good path") {
+        // No keys, no movement
         game.updateGame(1D, mutable.Map.empty, canvas) shouldBe game
 
+        // Opposite horizontal navigation, no movement 1
         game.updateGame(1D, mutable.Map(Left -> dummyTimeStamp, Right -> dummyTimeStamp), canvas) shouldBe game
 
+        // Opposite horizontal navigation, no movement 2
+        game.updateGame(1D, mutable.Map(Right -> dummyTimeStamp, Left -> dummyTimeStamp), canvas) shouldBe game
+
+        // Opposite vertical navigation, no movement 1
+        game.updateGame(1D, mutable.Map(Up -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
+
+        // Opposite vertical navigation, no movement 2
+        game.updateGame(1D, mutable.Map(Down -> dummyTimeStamp, Up -> dummyTimeStamp), canvas) shouldBe game
+
+        // All four directions, no movement
         game.updateGame(
           1D,
-          mutable.Map(Left -> dummyTimeStamp, Right -> dummyTimeStamp, Up -> dummyTimeStamp, Down -> dummyTimeStamp),
+          mutable.Map(Up -> dummyTimeStamp, Right -> dummyTimeStamp, Left -> dummyTimeStamp, Down -> dummyTimeStamp),
           canvas
         ) shouldBe game
 
-        game.updateGame(1D, mutable.Map(Left -> dummyTimeStamp, Up -> dummyTimeStamp), canvas) shouldBe
-          game.copy(hero = new Hero(game.hero.pos - Position(Hero.speed, Hero.speed)))
+        games += game.updateGame(
+          1D,
+          mutable.Map(Left -> dummyTimeStamp, Right -> dummyTimeStamp, Up -> dummyTimeStamp, Down -> dummyTimeStamp),
+          canvas
+        )
+        games.head shouldBe game
+        games += game.copy(hero = new Hero(game.hero.pos - Position(Hero.speed, Hero.speed)))
+        // North west navigation
+        game.updateGame(1D, mutable.Map(Up -> dummyTimeStamp, Left -> dummyTimeStamp), canvas) shouldBe games.last
+
+        games += game.copy(hero = new Hero(game.hero.pos + Position(Hero.speed, Hero.speed)))
+        // South East navigation
+        game.updateGame(1D, mutable.Map(Down -> dummyTimeStamp, Right -> dummyTimeStamp), canvas) shouldBe games.last
+
       }
       it("sad path") {
         // Illegal key code
@@ -61,8 +85,9 @@ class GameSuite extends SuiteSpec with Game with Page {
       }
       it("experiment") {
 
-        val gs = new GameState(canvas, -1)
+        println(games.mkString("\n"))
 
+        val gs = new GameState(canvas, -1)
         canvas.setAttribute("crossOrigin", "anonymous")
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
@@ -74,4 +99,9 @@ class GameSuite extends SuiteSpec with Game with Page {
 
     }
   }
+}
+
+object GameSuite {
+  private val dummyTimeStamp = (0D, Position(0, 0))
+  private val games = mutable.MutableList.empty[GameState]
 }
