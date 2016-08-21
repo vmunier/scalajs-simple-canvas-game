@@ -32,8 +32,8 @@ class GameSuite extends SuiteSpec with Game with Page {
     describe("should tested if it within the limits") {
       // val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
       // canvas.setAttribute("crossOrigin", "anonymous")
-      canvas.width = 1358 // 1366
-      canvas.height = 760 // 768
+      canvas.width = 1242 // 1366
+      canvas.height = 674 // 768
 
       val dummyTimeStamp = (0D, Position(0, 0))
       val game = new GameState(canvas, -1).copy(monster = Monster(0, 0)) // Keep the monster out of site

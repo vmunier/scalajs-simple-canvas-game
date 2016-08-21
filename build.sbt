@@ -4,7 +4,7 @@ version := "0.0-SNAPSHOT"
 // ** Meta data **
 description := "Simple HTML5 Canvas game ported to Scala.js."
 startYear := Some(2016)
-licenses += "EUPL v.1.1" -> url("http://joinup.ec.europa.eu/community/eupl/og_page/european-union-public-licence-eupl-v11")
+licenses += ("EUPL v.1.1", url("http://joinup.ec.europa.eu/community/eupl/og_page/european-union-public-licence-eupl-v11"))
 
 organization := "nl.amsscala"
 organizationName := "Amsterdam.scala Meetup Group"
@@ -19,19 +19,17 @@ normalizedName := "main"
 scalaVersion in ThisBuild := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.1",
-  "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
-  "com.lihaoyi" %%% "scalatags" % "0.6.0"
+  "org.scala-js"  %%% "scalajs-dom" % "0.9.1",
+  "org.scalatest" %%% "scalatest"   % "3.0.0" % "test",
+  "com.lihaoyi"   %%% "scalatags"   % "0.6.0"
 )
 
 // ** Scala.js configuration **
-// lazy val root = (project in file(".")).
-enablePlugins(ScalaJSPlugin)
+lazy val root = (project in file(".")).enablePlugins(ScalaJSPlugin)
 
-// Needed for tests
+// Necessary for testing
 jsDependencies += RuntimeDOM
 scalaJSUseRhino in Global := false
-
 //testFrameworks += new TestFramework("utest.runner.Framework")
 
 // If true, a launcher script src="../[normalizedName]-launcher.js will be generated

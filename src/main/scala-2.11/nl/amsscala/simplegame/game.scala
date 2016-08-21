@@ -122,15 +122,15 @@ private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCau
  * @tparam T
  */
 private class Monster[T: Numeric](val pos: Position[T]) {
-  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas): Boolean =
-    pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
-
   override def equals(that: Any): Boolean = that match {
     case that: Monster[T] => this.pos == that.pos
     case _ => false
   }
 
   override def toString = s"${this.getClass.getSimpleName} $pos"
+
+  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas): Boolean =
+    pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
 }
 
 /**

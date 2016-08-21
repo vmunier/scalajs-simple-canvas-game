@@ -3,6 +3,8 @@ package simplegame
 
 import org.scalajs.dom
 
+import scalatags.JsDom.all._
+
 /**
  *
  */
@@ -47,10 +49,18 @@ protected trait Page {
   }
 
   canvas.width = dom.window.innerWidth.toInt
-  canvas.height = dom.window.innerHeight.toInt - 32
-  println(s"Dimension of canvas set to ${canvas.width},${canvas}")
+  canvas.height = dom.window.innerHeight.toInt - 24
+  println(s"Dimension of canvas set to ${canvas.width},${canvas.height}")
   canvas.textContent = "Your browser doesn't support the HTML5 CANVAS tag."
 
-  dom.document.body.appendChild(canvas)
+  dom.document.body.appendChild(div(
+    cls := "content", style := "text-align:center; background-color:#3F8630;",
+    canvas,
+    a(href := "http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/", "Simple HTML5 Canvas game"),
+    " ported to ",
+    a(href := "http://www.scala-js.org/", "ScalaJS"),
+    ". The source code of this game is available on ",
+    a(href := "https://github.com/amsterdam-scala/Sjs-Simple-HTML5-canvas-game/", "GitHub"), "."
+  ).render)
 
 }
