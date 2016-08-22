@@ -94,8 +94,8 @@ private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCau
       val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * latency).toInt })
       val correctedThis = newHero.pos + Hero.size
 
-      if (newHero.pos.isValidPosition(Position(canvas.width, canvas.height), correctedThis)) // Are they touching?
-        if (newHero.pos.areTouching(monster.pos, correctedThis, monster.pos + Hero.size)) // Reset the game when the player catches a monster
+      if (newHero.pos.isValidPosition(Position(canvas.width, canvas.height), Hero.size)) // Are they touching?
+        if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster
           new GameState(canvas, monstersCaught)
         else copy(hero = newHero)
       else this
@@ -135,7 +135,7 @@ private class Monster[T: Numeric](val pos: Position[T]) {
   protected[simplegame] def isValidPosition(canvas: dom.html.Canvas) = {
     pos.isValidPosition(
       Position(canvas.width, canvas.height).asInstanceOf[Position[T]],
-      pos + Hero.size.asInstanceOf[T]
+      Hero.size.asInstanceOf[T]
     )
   }
 }

@@ -1,7 +1,5 @@
 package nl.amsscala
 
-import org.scalajs.dom
-
 /**
  * Provides generic classes and operators for dealing with 2D positions.
  *
@@ -25,17 +23,27 @@ package object simplegame {
 
     def *(factor: P) = Position(x * factor, y * factor)
 
-    @inline def intersectsWith(a0: P, b0: P, a1: P, b1: P) = a0 <= b1 && a1 <= b0
-    def isValidPosition(canvasPos: Position[P], correctedThis: Position[P]): Boolean = {
+    private def interSectsArea[P: Numeric](p0: Position[P], p1: Position[P], p2: Position[P], p3: Position[P]) = {
+      @inline def intersectsWith(a0: P, b0: P, a1: P, b1: P) = a0 <= b1 && a1 <= b0
+
+      intersectsWith(p0.x, p1.x, p2.x, p3.x) &&
+        intersectsWith(p0.y, p1.y, p2.y, p3.y)
+    }
+
+    def isValidPosition(canvasPos: Position[P], size: P): Boolean = {
       // println(s"Testing: $x, $y")
 
-      intersectsWith(0.asInstanceOf[P], canvasPos.x, correctedThis.x, x) &&
-        intersectsWith(0.asInstanceOf[P], canvasPos.y, correctedThis.y, y)
+      interSectsArea(Position(0, 0).asInstanceOf[Position[P]], canvasPos, this + size, this)
     }
 
-    def areTouching(posB: Position[P], correctedThis: Position[P], correctedPosB: Position[P]): Boolean = {
-      intersectsWith(x, correctedThis.x, posB.x, correctedPosB.x) &&
-        intersectsWith(y, correctedThis.y, posB.y, correctedPosB.y)
-    }
+    /**
+     * Checks that two squares intersects
+     *
+     * @param posB Position of the second square
+     * @param side size of both two squares
+     * @return     True if a intersection occurs
+     */
+    def areTouching(posB: Position[P], side: P): Boolean = interSectsArea(this, this + side, posB, posB + side)
   }
+
 }
