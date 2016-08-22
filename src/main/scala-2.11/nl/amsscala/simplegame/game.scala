@@ -29,7 +29,7 @@ protected trait Game {
     def gameLoop = () => {
       val now = js.Date.now()
       val delta = now - prev
-      val updated = oldUpdated.getOrElse(new GameState(canvas, -1)).updateGame(delta / 1000, keysPressed, canvas)
+      val updated = oldUpdated.getOrElse(new GameState(canvas, -1, true)).updateGame(delta / 1000, keysPressed, canvas)
 
       if (oldUpdated.isEmpty || (oldUpdated.get.hero.pos != updated.hero.pos))
         oldUpdated = SimpleCanvasGame.render(updated)
@@ -62,8 +62,14 @@ protected trait Game {
  * @param hero           Hero object with its position
  * @param monster        Monster object with its position
  * @param monstersCaught The score
+ * @param newGame        Flags new game
  */
-private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCaught: Int = 0) {
+private case class GameState(
+    hero: Hero[Int],
+    monster: Monster[Int],
+    monstersCaught: Int = 0,
+    newGame: Boolean
+) {
 
   /**
    * Update game objects according the pressed keys.
@@ -92,11 +98,10 @@ private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCau
     if (keysDown.isEmpty) this
     else {
       val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * latency).toInt })
-      val correctedThis = newHero.pos + Hero.size
 
       if (newHero.pos.isValidPosition(Position(canvas.width, canvas.height), Hero.size)) // Are they touching?
         if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster
-          new GameState(canvas, monstersCaught)
+          new GameState(canvas, monstersCaught, true)
         else copy(hero = newHero)
       else this
     }
@@ -110,20 +115,22 @@ private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCau
    * @param canvas   The visual html element
    * @param oldScore Score accumulator
    */
-  def this(canvas: dom.html.Canvas, oldScore: Int) {
+  def this(canvas: dom.html.Canvas, oldScore: Int, newGame: Boolean) {
     this(
       Hero(canvas.width / 2, canvas.height / 2),
       // Throw the monster somewhere on the screen randomly
       Monster((math.random * (canvas.width - Hero.size)).toInt, (math.random * (canvas.height - Hero.size)).toInt),
-      oldScore + 1
+      oldScore + 1,
+      newGame
     )
   }
 }
 
 /**
+ * Monster class, holder for its coordinates, copied as extentension to the Hero class
  *
- * @param pos
- * @tparam T
+ * @param pos Monsters' position
+ * @tparam T  Numeric generic abstraction
  */
 private class Monster[T: Numeric](val pos: Position[T]) {
   override def equals(that: Any): Boolean = that match {
@@ -132,31 +139,18 @@ private class Monster[T: Numeric](val pos: Position[T]) {
   }
 
   override def toString = s"${this.getClass.getSimpleName} $pos"
-  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas) = {
-    pos.isValidPosition(
-      Position(canvas.width, canvas.height).asInstanceOf[Position[T]],
-      Hero.size.asInstanceOf[T]
-    )
-  }
+  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas) =
+    pos.isValidPosition(Position(canvas.width, canvas.height).asInstanceOf[Position[T]], Hero.size.asInstanceOf[T])
 }
 
-/**
- *
- */
 private object Monster {
   // def apply[T: Numeric](pos: Position[T]) = new Monster(pos)
   def apply[T: Numeric](x: T, y: T) = new Monster(Position(x, y))
 }
 
-/**
- * @param pos
- * @tparam A
- */
 private class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos)
 
-/**
- * Compagnion object of class Hero
- */
+/** Compagnion object of class Hero */
 private object Hero {
   val size = 32
   val speed = 256

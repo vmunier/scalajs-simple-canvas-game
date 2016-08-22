@@ -81,7 +81,7 @@ class GameSuite extends SuiteSpec {
         game.updateGame(1D, mutable.Map(0 -> dummyTimeStamp), canvas) shouldBe game
       }
       it("bad path") { // No move due a of out canvas limit case
-        game.updateGame(1.48828125, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
+        game.updateGame(1.48828125D, mutable.Map(Right -> dummyTimeStamp, Down -> dummyTimeStamp), canvas) shouldBe game
       }
       it("experiment") {
 
