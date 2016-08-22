@@ -132,9 +132,12 @@ private class Monster[T: Numeric](val pos: Position[T]) {
   }
 
   override def toString = s"${this.getClass.getSimpleName} $pos"
-
-  //protected[simplegame] def isValidPosition(canvas: dom.html.Canvas) ={}
-  // pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
+  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas) = {
+    pos.isValidPosition(
+      Position(canvas.width, canvas.height).asInstanceOf[Position[T]],
+      pos + Hero.size.asInstanceOf[T]
+    )
+  }
 }
 
 /**
