@@ -17,23 +17,25 @@ package object simplegame {
 
     def +(p: Position[P]) = Position(x + p.x, y + p.y)
 
+    def +(term: P) = Position(x + term, y + term)
+
     def -(p: Position[P]) = Position(x - p.x, y - p.y)
 
     def *(p: Position[P]) = Position(x * p.x, y * p.y)
 
     def *(factor: P) = Position(x * factor, y * factor)
 
-    def isWithinTheCanvas(canvas: dom.html.Canvas, size: P): Boolean =
-      0.asInstanceOf[P] <= x &&
-        (x + size) <= canvas.width.asInstanceOf[P] &&
-        0.asInstanceOf[P] <= y &&
-        (y + size) <= canvas.height.asInstanceOf[P]
+    @inline def intersectsWith(a0: P, b0: P, a1: P, b1: P) = a0 <= b1 && a1 <= b0
+    def isValidPosition(canvasPos: Position[P], correctedThis: Position[P]): Boolean = {
+      // println(s"Testing: $x, $y")
 
-    def areTouching(posB: Position[P], size: P): Boolean =
-      x <= (posB.x + size) &&
-        posB.x <= (x + size) &&
-        y <= (posB.y + size) &&
-        posB.y <= (y + size)
+      intersectsWith(0.asInstanceOf[P], canvasPos.x, correctedThis.x, x) &&
+        intersectsWith(0.asInstanceOf[P], canvasPos.y, correctedThis.y, y)
+    }
+
+    def areTouching(posB: Position[P], correctedThis: Position[P], correctedPosB: Position[P]): Boolean = {
+      intersectsWith(x, correctedThis.x, posB.x, correctedPosB.x) &&
+        intersectsWith(y, correctedThis.y, posB.y, correctedPosB.y)
+    }
   }
-
 }

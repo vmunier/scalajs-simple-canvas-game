@@ -89,14 +89,17 @@ private case class GameState(hero: Hero[Int], monster: Monster[Int], monstersCau
 
     val newHero = new Hero(displacements.fold(hero.pos)((z, x)=> z + x))
     */
+    if (keysDown.isEmpty) this
+    else {
+      val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * latency).toInt })
+      val correctedThis = newHero.pos + Hero.size
 
-    val newHero = new Hero(displacements.fold(hero.pos) { (z, i) => z + i * (Hero.speed * latency).toInt })
-
-    if (newHero.isValidPosition(canvas)) // Are they touching?
-      if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster
-        new GameState(canvas, monstersCaught)
-      else copy(hero = newHero)
-    else this
+      if (newHero.pos.isValidPosition(Position(canvas.width, canvas.height), correctedThis)) // Are they touching?
+        if (newHero.pos.areTouching(monster.pos, correctedThis, monster.pos + Hero.size)) // Reset the game when the player catches a monster
+          new GameState(canvas, monstersCaught)
+        else copy(hero = newHero)
+      else this
+    }
   }
 
   /**
@@ -130,8 +133,8 @@ private class Monster[T: Numeric](val pos: Position[T]) {
 
   override def toString = s"${this.getClass.getSimpleName} $pos"
 
-  protected[simplegame] def isValidPosition(canvas: dom.html.Canvas): Boolean =
-    pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
+  //protected[simplegame] def isValidPosition(canvas: dom.html.Canvas) ={}
+  // pos.isWithinTheCanvas(canvas, Hero.size.asInstanceOf[T])
 }
 
 /**
