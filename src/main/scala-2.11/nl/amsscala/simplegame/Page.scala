@@ -22,6 +22,9 @@ protected trait Page {
    * @return None if not ready else the same GameState if drawn
    */
   protected[simplegame] def render(gs: GameState) = {
+    def gameOverTxt = "Game Over?"
+    def explainTxt = "Use the arrow keys to\nattack the hidden monster."
+
     if (bgImage.isReady && heroImage.isReady && monsterImage.isReady) {
       ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)
       ctx.drawImage(heroImage.element, gs.hero.pos.x, gs.hero.pos.y)
@@ -33,6 +36,20 @@ protected trait Page {
       ctx.textAlign = "left"
       ctx.textBaseline = "top"
       ctx.fillText(f"Goblins caught: ${gs.monstersCaught}%03d", 32, 32)
+
+      if (gs.newGame) {
+        ctx.textAlign = "center"
+        ctx.font = "48px Helvetica"
+
+        ctx.fillText(
+          if (gs.isGameOver) gameOverTxt else {
+            val txt = explainTxt.split('\n')
+            ctx.fillText(txt(1), canvas.width / 2, canvas.height / 2 + 32)
+            txt(0)
+          }, canvas.width / 2, canvas.height / 2 - 48
+        )
+      }
+
       Some(gs)
     } else None
   }

@@ -102,10 +102,12 @@ private case class GameState(
       if (newHero.pos.isValidPosition(Position(canvas.width, canvas.height), Hero.size)) // Are they touching?
         if (newHero.pos.areTouching(monster.pos, Hero.size)) // Reset the game when the player catches a monster
           new GameState(canvas, monstersCaught, true)
-        else copy(hero = newHero)
+        else copy(hero = newHero, newGame = false)
       else this
     }
   }
+
+  def isGameOver = newGame && monstersCaught != 0
 
   /**
    * Auxiliary GameState constructor
