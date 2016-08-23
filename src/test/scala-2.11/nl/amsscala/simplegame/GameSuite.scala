@@ -36,7 +36,7 @@ class GameSuite extends SuiteSpec {
       canvas.width = 1242 // 1366
       canvas.height = 674 // 768
 
-      val game = new GameState(canvas, -1).copy(monster = Monster(0, 0)) // Keep the monster out of site
+      val game = new GameState(canvas, -1, false).copy(monster = Monster(0, 0)) // Keep the monster out of site
 
       it("good path") {
         // No keys, no movement
@@ -87,7 +87,7 @@ class GameSuite extends SuiteSpec {
 
         println(games.mkString("\n"))
 
-        val gs = new GameState(canvas, -1)
+        val gs = new GameState(canvas, -1, false)
         canvas.setAttribute("crossOrigin", "anonymous")
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
