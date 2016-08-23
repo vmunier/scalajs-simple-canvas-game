@@ -1,21 +1,20 @@
 package nl.amsscala
 
 /**
- * Provides generic class and operators for dealing with 2D positions.
- * As well dealing with 2D areas.
+ * Provides generic class and operators for dealing with 2D positions. As well dealing with 2D areas.
  */
 package object simplegame {
-  // Experimental timestamp and position, displacement is a function of time
-  type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
+  /** Experimental timestamp and position, displacement is a function of time */
+  protected[simplegame]type keysBufferType = scala.collection.mutable.Map[Int, (Double, Position[Int])]
 
   /**
-   * Generic base class Position, holding the two coordinates
+   * Generic base class Position, holding the two ordinates
    *
-   * @param x
-   * @param y
-   * @tparam P
+   * @param x  The abscissa
+   * @param y  The ordinate
+   * @tparam P Numeric type
    */
-  case class Position[P: Numeric](x: P, y: P) {
+  protected[simplegame] case class Position[P: Numeric](x: P, y: P) {
 
     import Numeric.Implicits.infixNumericOps
     import Ordering.Implicits.infixOrderingOps
@@ -45,9 +44,9 @@ package object simplegame {
     /**
      * Check if the square area is within the rectangle area
      *
-     * @param canvasPos
-     * @param side
-     * @return
+     * @param canvasPos Position of the second square
+     * @param side      side of both two squares
+     * @return          False  if a square out of bound
      */
     def isValidPosition(canvasPos: Position[P], side: P): Boolean = {
       // println(s"Testing: $x, $y")

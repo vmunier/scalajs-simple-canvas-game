@@ -19,6 +19,7 @@ normalizedName := "main"
 scalaVersion in ThisBuild := "2.11.8"
 
 libraryDependencies ++= Seq(
+  "be.doeraene"   %%% "scalajs-jquery" % "0.9.0",
   "org.scala-js"  %%% "scalajs-dom" % "0.9.1",
   "org.scalatest" %%% "scalatest"   % "3.0.0" % "test",
   "com.lihaoyi"   %%% "scalatags"   % "0.6.0"

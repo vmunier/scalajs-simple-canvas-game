@@ -7,9 +7,7 @@ import org.scalajs.dom.ext.KeyCode.{ Down, Left, Right, Up }
 import scala.collection.mutable
 import scala.scalajs.js
 
-/**
- *
- */
+/** The game with its rules. */
 protected trait Game {
   private[this] val framesPerSec = 30
 
@@ -129,7 +127,7 @@ private case class GameState(
 }
 
 /**
- * Monster class, holder for its coordinates, copied as extentension to the Hero class
+ * Monster class, holder for its coordinate, copied as extentension to the Hero class
  *
  * @param pos Monsters' position
  * @tparam T  Numeric generic abstraction

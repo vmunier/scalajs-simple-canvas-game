@@ -5,12 +5,10 @@ import org.scalajs.dom
 
 import scalatags.JsDom.all._
 
-/**
- *
- */
+/** All related to Html5 visuals */
 protected trait Page {
   // Create the canvas
-  protected val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
+  private[simplegame] val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
   canvas.setAttribute("crossOrigin", "anonymous")
   private[this] val ctx = canvas.getContext("2d") // .asInstanceOf[dom.CanvasRenderingContext2D]
   private[this] val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
