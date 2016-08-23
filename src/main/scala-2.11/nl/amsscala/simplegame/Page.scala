@@ -75,9 +75,7 @@ protected trait Page {
     canvas,
     a(href := "http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/", "Simple HTML5 Canvas game"),
     " ported to ",
-    a(href := "http://www.scala-js.org/", "ScalaJS"),
-    ". The source code of this game is available on ",
-    a(href := "https://github.com/amsterdam-scala/Sjs-Simple-HTML5-canvas-game/", "GitHub"), "."
+    a(href := "http://www.scala-js.org/", "ScalaJS"), "."
   ).render)
 
 }
