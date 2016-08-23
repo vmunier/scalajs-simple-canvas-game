@@ -6,4 +6,4 @@
 Original tutorial in Javascript :
 [how-to-make-a-simple-html5-canvas-game](http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/)
 
-Play the [live demo](https://amsterdam-scala.github.io/Sjs-Simple-HTML5-canvas-game/docs/views/index.html).
+Play the [live demo](http://goo.gl/oqSFCa).
