@@ -62,7 +62,7 @@ protected trait Game {
  * @param monstersCaught The score
  * @param newGame        Flags new game
  */
-private case class GameState(
+case class GameState(
     hero: Hero[Int],
     monster: Monster[Int],
     monstersCaught: Int = 0,
@@ -132,7 +132,7 @@ private case class GameState(
  * @param pos Monsters' position
  * @tparam T  Numeric generic abstraction
  */
-private class Monster[T: Numeric](val pos: Position[T]) {
+class Monster[T: Numeric](val pos: Position[T]) {
   override def equals(that: Any): Boolean = that match {
     case that: Monster[T] => this.pos == that.pos
     case _ => false
@@ -143,15 +143,15 @@ private class Monster[T: Numeric](val pos: Position[T]) {
     pos.isValidPosition(Position(canvas.width, canvas.height).asInstanceOf[Position[T]], Hero.size.asInstanceOf[T])
 }
 
-private object Monster {
+object Monster {
   // def apply[T: Numeric](pos: Position[T]) = new Monster(pos)
   def apply[T: Numeric](x: T, y: T) = new Monster(Position(x, y))
 }
 
-private class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos)
+class Hero[A: Numeric](override val pos: Position[A]) extends Monster[A](pos)
 
 /** Compagnion object of class Hero */
-private object Hero {
+object Hero {
   val size = 32
   val speed = 256
 

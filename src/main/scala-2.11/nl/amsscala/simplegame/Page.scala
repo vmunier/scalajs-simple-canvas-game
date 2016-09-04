@@ -10,7 +10,7 @@ protected trait Page {
   // Create the canvas
   private[simplegame] val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
   canvas.setAttribute("crossOrigin", "anonymous")
-  private[this] val ctx = canvas.getContext("2d") // .asInstanceOf[dom.CanvasRenderingContext2D]
+  private[simplegame] val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
   private[this] val (bgImage, heroImage, monsterImage) = (Image("img/background.png"), Image("img/hero.png"), Image("img/monster.png"))
 
   /**
@@ -64,7 +64,7 @@ protected trait Page {
   }
 
   canvas.width = dom.window.innerWidth.toInt
-  canvas.height = dom.window.innerHeight.toInt - 24
+  canvas.height = dom.window.innerHeight.toInt - 25
   println(s"Dimension of canvas set to ${canvas.width},${canvas.height}")
   canvas.textContent = "Your browser doesn't support the HTML5 CANVAS tag."
 

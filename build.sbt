@@ -1,37 +1,37 @@
-name := "Simple Game"
-version := "0.0-SNAPSHOT"
-
-// ** Meta data **
-description := "Simple HTML5 Canvas game ported to Scala.js."
-startYear := Some(2016)
-licenses += ("EUPL v.1.1", url("http://joinup.ec.europa.eu/community/eupl/og_page/european-union-public-licence-eupl-v11"))
-
-organization := "nl.amsscala"
-organizationName := "Amsterdam.scala Meetup Group"
+                name := "Simple Game"
+             version := "0.0"
+         description := "Simple HTML5 Canvas game ported to Scala.js."
+        organization := "nl.amsscala"
+    organizationName := "Amsterdam.scala Meetup Group"
 organizationHomepage := Some(url("http://www.meetup.com/amsterdam-scala/"))
-homepage := Some(url("http://github.com/amsterdam-scala/Sjs-Full-Window-HTML5-Canvas"))
+            homepage := Some(url("http://github.com/amsterdam-scala/Sjs-Full-Window-HTML5-Canvas"))
+           startYear := Some(2016)
+            licenses += "EUPL v.1.1" -> url("http://joinup.ec.europa.eu/community/eupl/og_page/european-union-public-licence-eupl-v11")
 
 // KEEP THIS normalizedName CONSTANTLY THE SAME, otherwise the outputted JS filename will be changed.
-normalizedName := "main"
-
+      normalizedName := "main"
 
 // ** Scala dependencies **
 scalaVersion in ThisBuild := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "be.doeraene"   %%% "scalajs-jquery" % "0.9.0",
-  "org.scala-js"  %%% "scalajs-dom" % "0.9.1",
-  "org.scalatest" %%% "scalatest"   % "3.0.0" % "test",
-  "com.lihaoyi"   %%% "scalatags"   % "0.6.0"
+  "be.doeraene"        %%% "scalajs-jquery" % "0.9.0",
+  "com.lihaoyi"        %%% "scalatags"      % "0.6.0",
+  "org.scala-js"       %%% "scalajs-dom"    % "0.9.1",
+  "org.scalatest"      %%% "scalatest"      % "3.0.0" % "test"
 )
+skip in packageJSDependencies := false // All JavaScript dependencies to be concatenated to a single file
+
+scalacOptions in (Compile,doc) ++= Seq("-doc-root-content", baseDirectory.value+"/src/main/scala-2.11/root-doc.md",
+  "-groups", "-implicits")
 
 // ** Scala.js configuration **
-lazy val root = (project in file(".")).enablePlugins(ScalaJSPlugin)
+// lazy val root = (project in file(".")).
+enablePlugins(ScalaJSPlugin)
 
 // Necessary for testing
 jsDependencies += RuntimeDOM
 scalaJSUseRhino in Global := false
-//testFrameworks += new TestFramework("utest.runner.Framework")
 
 // If true, a launcher script src="../[normalizedName]-launcher.js will be generated
 // that always calls the main def indicated by the used JSApp trait.
@@ -47,7 +47,7 @@ persistLauncher in Test := false
 
 // Workbench settings **
 if (sys.env.isDefinedAt("CI")) {
-  println("Workbench disabled", sys.env.getOrElse("CI", "?"))
+  println("Workbench disabled ", sys.env.getOrElse("CI", "?"))
   Seq.empty
 } else {
   println("Workbench enabled")
@@ -55,7 +55,8 @@ if (sys.env.isDefinedAt("CI")) {
 }
 
 if (sys.env.isDefinedAt("CI")) normalizedName := normalizedName.value // Dummy
-else refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
+else // Update without refreshing the page every time fastOptJS completes
+  updateBrowsers <<= updateBrowsers.triggeredBy(fastOptJS in Compile)
 
 if (sys.env.isDefinedAt("CI")) normalizedName := normalizedName.value
 else // Workbench has to know how to restart your application

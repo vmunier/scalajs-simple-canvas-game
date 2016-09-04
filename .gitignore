@@ -1,26 +1,39 @@
-# sbt
-lib_managed
-project/project
-target
+# Log files
+*.class
+*.log
+
+# sbt specific
+.cache
+dist/*
+lib_managed/
+project/**/project
+project/activator-sbt*
+src_managed/
+target/
 
 # Worksheets (Eclipse or IntelliJ)
 *.sc
 
-# Eclipse
-.cache
+# Scala-IDE specific
 .classpath
 .project
 .scala_dependencies
 .settings
-.target
 .worksheet
 
 # IntelliJ
-.idea
+*.iml
+*.iws
+.idea/
+/classes/
+/out/
+
+# ScalaTest
 exportToHTML
 
 # Mac
 .DS_Store
 
-# Log files
-*.log
+# Windows
+desktop.ini
+thumbs.db
