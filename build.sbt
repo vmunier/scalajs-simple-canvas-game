@@ -54,10 +54,6 @@ if (sys.env.isDefinedAt("CI")) {
   workbenchSettings
 }
 
-if (sys.env.isDefinedAt("CI")) normalizedName := normalizedName.value // Dummy
-else // Update without refreshing the page every time fastOptJS completes
-  updateBrowsers <<= updateBrowsers.triggeredBy(fastOptJS in Compile)
+updateBrowsers <<= updateBrowsers.triggeredBy(fastOptJS in Compile)
 
-if (sys.env.isDefinedAt("CI")) normalizedName := normalizedName.value
-else // Workbench has to know how to restart your application
-  bootSnippet := "nl.amsscala.simplegame.SimpleCanvasGame().main();"
+bootSnippet := "nl.amsscala.simplegame.SimpleCanvasGame().main();"
