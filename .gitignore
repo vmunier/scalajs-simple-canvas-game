@@ -1,28 +1,42 @@
-logs
-project/project
-project/target
-target
-tmp
-.history
-dist
-.idea
-*.iml
-/out
-.idea_modules
+# Log files
+*.class
+*.log
+
+# sbt specific
+.cache
+dist/*
+lib_managed/
+project/**/project
+project/activator-sbt*
+src_managed/
+target/
+
+# Worksheets (Eclipse or IntelliJ)
+*.sc
+
+# Scala-IDE specific
+.cache-main
+.cache-tests
 .classpath
 .project
-/RUNNING_PID
+.scala_dependencies
 .settings
+.worksheet
+bin/
+
+# IntelliJ
+*.iml
+*.iws
+.idea/
+/classes/
+/out/
+
+# ScalaTest
+exportToHTML
+
+# Mac
 .DS_Store
 
-# temp files
-.~*
-*~
-*.orig
-
-# eclipse
-.scala_dependencies
-.buildpath
-.cache
-.target
-bin/
+# Windows
+desktop.ini
+thumbs.db

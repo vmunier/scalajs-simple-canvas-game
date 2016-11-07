@@ -1,0 +1,32 @@
+#https://docs.travis-ci.com/user/languages/scala
+language: scala
+before_install:
+  # Initilize xvfb for headless testing
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  #- sleep 3 # give xvfb some time to start
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION firefox:test
+
+  # Trick to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+
+scala:
+  - 2.12.0
+
+jdk:
+  - oraclejdk8
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.ivy2
+    - $HOME/.m2/repository
+    - $HOME/.sbt
+
+env:
+- CI=travis
+
+addons:
+  firefox: "46.0.1"
