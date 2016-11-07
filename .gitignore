@@ -15,11 +15,14 @@ target/
 *.sc
 
 # Scala-IDE specific
+.cache-main
+.cache-tests
 .classpath
 .project
 .scala_dependencies
 .settings
 .worksheet
+bin/
 
 # IntelliJ
 *.iml
