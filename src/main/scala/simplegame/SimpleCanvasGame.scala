@@ -30,9 +30,9 @@ class Image(src: String) {
   def isReady: Boolean = ready
 }
 
-object SimpleCanvasGame extends js.JSApp {
+object SimpleCanvasGame {
 
-  def main(): Unit = {
+  def main(args: Array[String]): Unit = {
     initGame
   }
 
